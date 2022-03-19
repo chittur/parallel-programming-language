@@ -1,0 +1,5 @@
+bin\Debug\LanguageConstructs.dll
+bin\Debug\LanguageConstructs.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\LanguageConstructs.dll
+obj\Debug\LanguageConstructs.pdb

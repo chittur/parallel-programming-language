@@ -1,0 +1,7 @@
+obj\Debug\ResolveAssemblyReference.cache
+bin\Debug\Runtime.dll
+bin\Debug\Runtime.pdb
+bin\Debug\Intermediary.dll
+bin\Debug\Intermediary.pdb
+obj\Debug\Runtime.dll
+obj\Debug\Runtime.pdb

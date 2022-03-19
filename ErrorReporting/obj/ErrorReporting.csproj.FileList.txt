@@ -1,0 +1,7 @@
+obj\Debug\ResolveAssemblyReference.cache
+bin\Debug\ErrorReporting.dll
+bin\Debug\ErrorReporting.pdb
+bin\Debug\LanguageConstructs.dll
+bin\Debug\LanguageConstructs.pdb
+obj\Debug\ErrorReporting.dll
+obj\Debug\ErrorReporting.pdb

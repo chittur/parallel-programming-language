@@ -1,0 +1,8 @@
+bin\Debug\LexicalAnalysis.dll
+bin\Debug\LexicalAnalysis.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\LexicalAnalysis.dll
+obj\Debug\LexicalAnalysis.pdb
+bin\Debug\LanguageConstructs.dll
+bin\Debug\LanguageConstructs.pdb
+bin\Debug\LexicalAnalysis.XML

@@ -1,0 +1,64 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Program to sort an array of numbers using the Selection Sort algorithm.
+$ Demonstrates the usage of arrays and parallel assignment.
+
+{
+  @ Sort(boolean descending, reference integer a, reference integer b)
+  {
+    boolean condition;
+    
+    if (descending)
+    {
+      condition = a < b;
+    }
+    else
+    {
+      condition = a > b;
+    }
+
+    if (condition)
+    {
+      a, b = b, a; $ Swap a with b.
+    }
+  }
+
+  constant max = 5;
+  boolean descending;
+  integer[max] numbers;
+  integer loop, count;
+  
+  $ Sort in descending order? Read a boolean.
+  read descending;
+
+  $ Input numbers to sort.
+  count = 1;
+  while (count <= max)
+  {
+    read numbers[count];
+    count = count + 1;
+  }
+
+  $ Sort.
+  loop = 0;  
+  while (loop < max - 1)
+  {
+    count = 1;
+    while (count < max)
+    {
+      Sort(descending, 
+           reference numbers[count], 
+           reference numbers[count + 1]);
+      count = count + 1;
+    }
+
+    loop = loop + 1;
+  }
+  
+  $ Output sorted numbers.
+  count = 1;
+  while (count <= max)
+  {
+    write numbers[count];
+    count = count + 1;
+  }
+}

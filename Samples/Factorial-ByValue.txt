@@ -1,0 +1,29 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Program to find the factorial of a given number.
+$ Demonstrates recursive functions and parameter passing by value.
+
+{
+  @ [integer result] Factorial (integer number)
+  {
+    if (number < 0)
+    {
+      result = -1;
+    }
+    else
+    {
+      if (number <= 1)
+      {
+        result = 1;
+      }
+      else
+      {
+        result = Factorial(number - 1) * number;
+      }        
+    }
+  }
+  
+  integer input;
+  
+  read input;
+  write Factorial(input);
+}

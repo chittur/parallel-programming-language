@@ -1,0 +1,5 @@
+bin\Debug\Intermediary.dll
+bin\Debug\Intermediary.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Intermediary.dll
+obj\Debug\Intermediary.pdb

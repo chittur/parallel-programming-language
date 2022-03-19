@@ -1,0 +1,26 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Program to find the greatest common divisor of two given numbers.
+$ Demonstrates recursive functions.
+
+{
+  @ [integer result] GreatestCommonDivisor(integer a, integer b)
+  {
+    if (a < b)
+    {
+        a, b = b, a;  $ Swap a with b.
+    }
+  
+    if (b == 0)
+    {
+      result = a;
+    }
+    else
+    {
+      result = GreatestCommonDivisor(b, a % b);
+    }
+  }
+  
+  integer a, b;  
+  read a, b;  
+  write GreatestCommonDivisor(a, b);
+}

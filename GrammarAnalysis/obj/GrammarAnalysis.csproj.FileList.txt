@@ -1,0 +1,12 @@
+bin\Debug\GrammarAnalysis.dll
+bin\Debug\GrammarAnalysis.pdb
+bin\Debug\LexicalAnalysis.dll
+bin\Debug\LexicalAnalysis.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\GrammarAnalysis.dll
+obj\Debug\GrammarAnalysis.pdb
+bin\Debug\ErrorReporting.dll
+bin\Debug\LanguageConstructs.dll
+bin\Debug\ErrorReporting.pdb
+bin\Debug\LanguageConstructs.pdb
+bin\Debug\LexicalAnalysis.xml

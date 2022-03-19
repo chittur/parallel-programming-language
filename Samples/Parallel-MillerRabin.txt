@@ -1,0 +1,148 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Parallel program to find the primality of a number using Miller-Rabin algorithm.
+$ Miller-Rabin algorithm is a probabilistic test for the primality of a number.
+$ This program connects parallel nodes in a 'pipeline' configuration, and runs the
+$ Miller-Rabin algorithm on each node. If any one of the trials shows that a number
+$ is composite, then this is the correct answer. However, if all trials fail to
+$ prove that a number is composite, then it is almost certainly prime. The
+$ probability that the algorithm gives the wrong answer after, say, 40 trials is
+$ less than 10 to the power of -24.
+
+{
+    $ Performs modular exponentiation. Returns (x^y) % p
+    @ [integer result] RunModularExponentiation(integer x, integer y, integer p)
+    {
+        result = 1;
+
+        $ Update x if it is more than or equal to p.
+        x = x % p;
+
+        while (y > 0)
+        {
+            $ If y is odd, multiply x with result.
+            if ((y % 2) != 0)
+            {
+                result = (result * x) % p;
+            }
+
+            $ y must be even now
+            y = y / 2;
+            x = (x * x) % p;
+        }
+    }
+
+    $ Runs Miller-Rabin algorithm.
+    @ RunMillerRabinTest(channel left, channel right)
+    {
+        integer n, output, total;
+        boolean result;
+
+        receive n -> left;
+        send n -> right;
+
+        $ Corner cases
+        if ((n <= 1) | (n == 4))
+        {
+            result = false;
+        }
+        else
+        {
+            if ((n == 2) | (n == 3))
+            {
+                result = true;
+            }
+            else
+            {
+                $ Find r such that n = 2^d * r + 1 for some r >= 1
+                $ Pick a random number in [2..n-2] where n > 4.
+                integer d, r, a, x;
+
+                d = n - 1;
+
+                while ((d % 2) == 0)
+                {
+                    d = d / 2;
+                }
+
+                randomize r;
+                a = 2 + r % (n - 4);
+
+                $ Compute a^d % n
+                x = RunModularExponentiation(a, d, n);
+
+                if ((x == 1) | (x == (n - 1)))
+                {
+                    result = true;
+                }
+                else
+                {
+                    boolean found;
+                    found = false;
+
+                    $ Keep squaring x while one of the following does not happen
+                    $ (i) d does not reach n-1
+                    $ (ii) (x^2) % n is not 1
+                    $ (iii) (x^2) % n is not n-1
+                    while ((!found) & (d != (n - 1)))
+                    {
+                        x = (x * x) % n;
+                        d = d * 2;
+
+                        if (x == 1)
+                        {
+                            result = false;
+                            found = true;
+                        }
+
+                        if (x == (n - 1))
+                        {
+                            result = true;
+                            found = true;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        $ Return composite.
+                        result = false;
+                    }
+                }
+            }
+        }
+
+        if (result)
+        {
+            output = 1;
+        }
+        else
+        {
+            output = 0;
+        }
+
+        receive total -> left;
+        send (output + total) -> right;
+    }
+
+    boolean prime;
+    integer number, count, result;
+    constant max = 40;
+    channel[max] channels;
+
+    open channels[1];
+    count = 2;
+    while (count <= max)
+    {
+        open channels[count];
+        parallel RunMillerRabinTest(channels[count - 1], channels[count]);
+        count = count + 1;
+    }
+
+    read number;
+    send number -> channels[1];
+    receive number -> channels[40];
+
+    result = 0;
+    send result -> channels[1];
+    receive result -> channels[40];
+    write (result == (max - 1));
+}

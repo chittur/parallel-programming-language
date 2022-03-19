@@ -1,0 +1,69 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Parallel program to find the sum of the squares of the digits in a number.
+$ Demonstrates parallel recursion.
+$ If the number is greater than 10, a node splits the least significant digit
+$ out of it. The node then spawns another node to run in parallel and passes
+$ the remainder of the number to that node, and goes on to calculate the square
+$ of the digit that it saved initially. It then waits for the result from the
+$ parallel node, adds its own result to the received result, and sends it down.
+$ Example:
+$   Input number is 124. Expected result = (1 * 1) + (2 * 2) + (4 * 4) = 21.
+$   Main function:
+$       main function reads the user input (= 124).
+$       Main function spawns parallel Node 1, and passes the input.
+$   Node 1: input is 124.
+$       Node 1 splits it into 12 and 4.
+$       Spawns a parallel node (Node 2), and sends 12 up.
+$       And locally goes onto calculate square of 4.
+$       Waits for result from Node 2.
+$   Node 2: input is 12
+$       Node 1 splits it into 1 and 2.
+$       Spawns a parallel node (Node 3), and sends 1 up.
+$       And locally goes onto calculate square of 2.
+$       Waits for result from Node 3.
+$   Node 3: input is 1
+$       Node 3 calculates square of 1.
+$       Sends the result down to Node 2.
+$   Node 2:
+$       Gets the value from Node 3 (1) and adds it to local result (4).
+$       Sends the result (5) to Node 1.
+$   Node 1:
+$       Gets the value from Node 2 (5) and adds it to local result (16).
+$       Sends the result (21) to the main function.
+$   Main function:
+$       Prints out the result (21).
+
+{
+    @ Node(integer number, channel bottom)
+    {
+        if (number >= 10)
+        {
+            integer digit, result;
+            channel top;
+            
+            open top;
+            digit = number % 10;
+            parallel Node(number / 10, top);
+            result = digit * digit;
+            receive number -> top;
+            send (number + result) -> bottom;
+        }
+        else
+        {
+            send (number * number) -> bottom;
+        }
+    }
+
+    integer number;
+    channel link;
+
+    read number;
+    open link;
+    if (number > 0)
+    {
+        parallel Node(number, link);
+        receive number -> link;
+    }
+
+    write number;
+}

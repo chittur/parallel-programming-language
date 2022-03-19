@@ -1,0 +1,68 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Program to sort an array of numbers using the Quick Sort algorithm.
+$ Demonstrates the usage of arrays and recursive functions.
+
+{
+  constant max = 5;
+  integer[max] numbers;
+  
+  @ QuickSort(integer m, integer n)
+  {
+    integer i, j;
+    
+    @ Partition()
+    {
+      integer r;
+      
+      r = numbers[(m + n) / 2];
+      i = m;
+      j = n;
+      
+      while (i <= j)
+      {
+        while (numbers[i] < r)
+        {
+          i = i + 1;
+        }
+        
+        while (r < numbers[j])
+        {
+          j = j - 1;
+        }
+        
+        if (i <= j)
+        {
+          numbers[i], numbers[j] = numbers[j], numbers[i];
+          
+          i = i + 1;
+          j = j - 1;
+        }
+      }
+    }
+    
+    if (m < n)
+    {
+      Partition();
+      QuickSort(m, j);
+      QuickSort(i, n);
+    }
+  }
+    
+  integer k;
+  
+  k = 1;
+  while (k <= max)
+  {
+    read numbers[k];
+    k = k + 1;
+  }
+  
+  QuickSort(1, max);
+  
+  k = 1;
+  while (k <= max)
+  {
+    write numbers[k];
+    k = k + 1;
+  }
+}

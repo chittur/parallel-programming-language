@@ -1,0 +1,116 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Sequential program to find the primality of a number using Miller-Rabin algorithm.
+
+{
+    $ Performs modular exponentiation. Returns (x^y) % p
+    @ [integer result] RunModularExponentiation(integer x, integer y, integer p)
+    {
+        result = 1;
+
+        $ Update x if it is more than or equal to p.
+        x = x % p;
+
+        while (y > 0)
+        {
+            $ If y is odd, multiply x with result.
+            if ((y % 2) != 0)
+            {
+                result = (result * x) % p;
+            }
+
+            $ y must be even now
+            y = y / 2;
+            x = (x * x) % p;
+        }
+    }
+
+    $ Runs Miller-Rabin algorithm.
+    @ [boolean result] RunMillerRabinTest(integer n)
+    {
+        $ Corner cases
+        if ((n <= 1) | (n == 4))
+        {
+            result = false;
+        }
+        else
+        {
+            if ((n == 2) | (n == 3))
+            {
+                result = true;
+            }
+            else
+            {
+                $ Find r such that n = 2^d * r + 1 for some r >= 1
+                $ Pick a random number in [2..n-2] where n > 4.
+                integer d, r, a, x;
+
+                d = n - 1;
+
+                while ((d % 2) == 0)
+                {
+                    d = d / 2;
+                }
+
+                randomize r;
+                a = 2 + r % (n - 4);
+
+                $ Compute a^d % n
+                x = RunModularExponentiation(a, d, n);
+
+                if ((x == 1) | (x == (n - 1)))
+                {
+                    result = true;
+                }
+                else
+                {
+                    boolean found;
+                    found = false;
+
+                    $ Keep squaring x while one of the following does not happen
+                    $ (i) d does not reach n-1
+                    $ (ii) (x^2) % n is not 1
+                    $ (iii) (x^2) % n is not n-1
+                    while ((!found) & (d != (n - 1)))
+                    {
+                        x = (x * x) % n;
+                        d = d * 2;
+
+                        if (x == 1)
+                        {
+                            result = false;
+                            found = true;
+                        }
+
+                        if (x == (n - 1))
+                        {
+                            result = true;
+                            found = true;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        $ Return composite.
+                        result = false;
+                    }
+                }
+            }
+        }
+    }
+
+    boolean prime;
+    integer number, count;
+    constant max = 40;
+
+    prime = true;
+    count = 1;
+    read number;
+
+    while (prime & (count <= max))
+    {
+        prime = RunMillerRabinTest(number);
+        count = count + 1;
+    }
+
+    write prime;
+}

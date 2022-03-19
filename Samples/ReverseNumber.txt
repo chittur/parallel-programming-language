@@ -1,0 +1,31 @@
+$ Author: Ramaswamy Krishnan-Chittur
+$ Program to reverse the digits of a number (Example: Input of 3157 will result in an output of 7513).
+$ Demonstrates the basics of the language like read/write statements, if/else clauses, while loop etc.
+
+{
+  @ [integer result] Reverse (integer number)
+  {
+    if (number < 0)
+    {
+      result = -1;
+    }
+    else
+    {
+      result = 0;      
+      while (number > 0)
+      {
+        integer tens;
+        
+        tens = number % 10;
+        result = (result * 10) + tens;
+        number = number / 10;
+      }
+    }
+  }
+
+  integer input, result;
+  
+  read input;
+  result = Reverse(input);
+  write result;
+}
