@@ -139,10 +139,10 @@ $ less than 10 to the power of -24.
 
     read number;
     send number -> channels[1];
-    receive number -> channels[40];
+    receive number -> channels[max];
 
-    result = 0;
+    result = 1;
     send result -> channels[1];
-    receive result -> channels[40];
-    write (result == (max - 1));
+    receive result -> channels[max];
+    write (result == max);
 }
