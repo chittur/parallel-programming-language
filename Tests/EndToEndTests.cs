@@ -10,29 +10,29 @@
  * Description = End-to-end tests for this project.
  *****************************************************************************/
 
-using Compilation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Runtime;
 using System;
 using System.IO;
 using System.Text;
+using Compilation;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Runtime;
 
-namespace UnitTesting
+namespace Tests;
+
+/// <summary>
+/// End-to-end tests for this project.
+/// </summary>
+[TestClass]
+public class EndToEndTests
 {
     /// <summary>
-    /// End-to-end tests for this project.
+    /// Runs an end-to-end sanity test.
     /// </summary>
-    [TestClass]
-    public class EndToEndTests
+    [TestMethod]
+    public void TestBasicEndToEnd()
     {
-        /// <summary>
-        /// Runs an end-to-end sanity test.
-        /// </summary>
-        [TestMethod]
-        public void TestBasicEndToEnd()
-        {
-            // Sample program that exercises various language features.
-            const string code = @"
+        // Sample program that exercises various language features.
+        const string Code = @"
             $ - Program to sort an array of numbers using the Selection Sort algorithm.
             $ - Then feed the number to a parallel recursive function to find the sum
             $   of the squares of its digits.
@@ -119,35 +119,34 @@ namespace UnitTesting
             }
             ";
 
-            // Intermediate code file.
-            string intermediateFilename = new Random().Next().ToString() + ".sachin";
+        // Intermediate code file.
+        string intermediateFilename = new Random().Next().ToString() + ".sachin";
 
-            // Feed the code to the parser.
-            Parser parser = new Parser();
-            TextReader reader = new StringReader(code);
-            bool compiled = parser.Compile(reader, intermediateFilename);
+        // Feed the code to the parser.
+        Parser parser = new Parser();
+        TextReader reader = new StringReader(Code);
+        bool compiled = parser.Compile(reader, intermediateFilename);
 
-            // Validate that the compilation succeeded.
-            Assert.IsTrue(compiled);
+        // Validate that the compilation succeeded.
+        Assert.IsTrue(compiled);
 
-            if (compiled)
+        if (compiled)
+        {
+            // Feed the intermediate code file into the Runtime.
+            StringBuilder stringBuilder = new StringBuilder();
+            using (TextWriter writer = new StringWriter(stringBuilder))
             {
-                // Feed the intermediate code file into the Runtime.
-                StringBuilder stringBuilder = new StringBuilder();
-                using (TextWriter writer = new StringWriter(stringBuilder))
-                {
-                    Interpreter interpreter = new Interpreter(writer);
-                    interpreter.RunProgram(intermediateFilename);
-                    string result = stringBuilder.ToString();
+                Interpreter interpreter = new Interpreter(writer);
+                interpreter.RunProgram(intermediateFilename);
+                string result = stringBuilder.ToString();
 
-                    // Validate that the output of the program is as expected.
-                    const string expected = "165\r\n"; // Sum of sqaures of the digits of 13597.
-                    Assert.AreEqual(result, expected);
-                }
-
-                // Cleanup by deleting the intermediate code file.
-                File.Delete(intermediateFilename);
+                // Validate that the output of the program is as expected.
+                const string Expected = "165\r\n"; // Sum of sqaures of the digits of 13597.
+                Assert.AreEqual(result, Expected);
             }
+
+            // Cleanup by deleting the intermediate code file.
+            File.Delete(intermediateFilename);
         }
     }
 }

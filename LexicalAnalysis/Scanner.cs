@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = Scanner.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -11,568 +11,567 @@
  *               code file, and detect all the symbols in it.
  *****************************************************************************/
 
-using LanguageConstructs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using LanguageConstructs;
 
-namespace LexicalAnalysis
+namespace LexicalAnalysis;
+
+/// <summary>
+/// Provides methods to scan a code file, and detect all the symbols in it.
+/// </summary>
+public class Scanner
 {
+    readonly List<WordRecord> _wordList; // List of variables + keywords.
+    readonly TextReader _reader; // Text input to be scanned.
+
     /// <summary>
-    /// Provides methods to scan a code file, and detect all the symbols in it.
+    /// Creates an instance of the Scanner, which provides methods to scan a
+    /// code file, and detect all the symbols in it.
     /// </summary>
-    public class Scanner
+    /// <param name="reader">
+    /// Text input to be scanned.
+    /// </param>
+    public Scanner(TextReader reader)
     {
-        readonly List<WordRecord> wordList; // List of variables + keywords.
-        readonly TextReader reader; // Text input to be scanned.
+        LineNumber = 1;
+        IsLineCorrect = true;
+        CurrentSymbol = Symbol.Unknown;
+        Argument = -1;
+        _wordList = [];
+        this._reader = reader;
 
-        /// <summary>
-        /// Creates an instance of the Scanner, which provides methods to scan a
-        /// code file, and detect all the symbols in it.
-        /// </summary>
-        /// <param name="reader">
-        /// Text input to be scanned.
-        /// </param>
-        public Scanner(TextReader reader)
+        // Define the keywords in this language.
+        DefineKeywords();
+    }
+
+    /// <summary>
+    /// Gets a value indicating if the current line is without errors so far.
+    /// </summary>
+    public bool IsLineCorrect { get; private set; }
+
+    /// <summary>
+    /// Sets the value which indicates that the current line has error(s).
+    /// </summary>
+    public void SetLineIsIncorrect()
+    {
+        IsLineCorrect = false;
+    }
+
+    /// <summary>
+    /// Gets the current symbol.
+    /// </summary>
+    public Symbol CurrentSymbol { get; private set; }
+
+    /// <summary>
+    /// Gets the current Argument.
+    /// </summary>
+    public int Argument { get; private set; }
+
+    /// <summary>
+    /// Gets the current line number.
+    /// </summary>
+    public int LineNumber { get; private set; }
+
+    /// <summary>
+    /// Finds the next symbol in the input stream being scanned.
+    /// </summary>
+    /// <returns>
+    /// A value indicating if scanning may proceed or not.
+    /// </returns>
+    public bool NextSymbol()
+    {
+        bool next = true;
+        char c = Peek();
+        while (IsDelimiter(c)) // Delimiter?
         {
-            this.LineNumber = 1;
-            this.IsLineCorrect = true;
-            this.CurrentSymbol = Symbol.Unknown;
-            this.Argument = -1;
-            this.wordList = new List<WordRecord>();
-            this.reader = reader;
-
-            // Define the keywords in this language.
-            this.DefineKeywords();
-        }
-
-        /// <summary>
-        /// Gets a value indicating if the current line is without errors so far.
-        /// </summary>
-        public bool IsLineCorrect { get; private set; }
-
-        /// <summary>
-        /// Sets the value which indicates that the current line has error(s).
-        /// </summary>
-        public void SetLineIsIncorrect()
-        {
-            this.IsLineCorrect = false;
-        }
-
-        /// <summary>
-        /// Gets the current symbol.
-        /// </summary>
-        public Symbol CurrentSymbol { get; private set; }
-
-        /// <summary>
-        /// Gets the current Argument.
-        /// </summary>
-        public int Argument { get; private set; }
-
-        /// <summary>
-        /// Gets the current line number.
-        /// </summary>
-        public int LineNumber { get; private set; }
-
-        /// <summary>
-        /// Finds the next symbol in the input stream being scanned.
-        /// </summary>
-        /// <returns>
-        /// A value indicating if scanning may proceed or not.
-        /// </returns>
-        public bool NextSymbol()
-        {
-            bool next = true;
-            char c = this.Peek();
-            while (this.IsDelimiter(c)) // Delimiter?
+            if (c == '$')             // Comment
             {
-                if (c == '$')             // Comment
+                SkipLine();
+                NewLine();
+            }
+            else
+            {
+                if (c == '\n')
                 {
-                    this.SkipLine();
-                    this.NewLine();
+                    NewLine();
                 }
-                else
-                {
-                    if (c == '\n')
+
+                Read();
+            }
+
+            c = Peek();
+        }
+
+        if (char.IsLetter(c)) // Variable / Keyword?
+        {
+            StringBuilder text = new StringBuilder(c.ToString());
+            Read();
+            c = Peek();
+            while (char.IsLetterOrDigit(c) || (c == '_'))
+            {
+                text.Append(c);
+                Read();
+                c = Peek();
+            }
+
+            Search(text.ToString());
+        }
+        else if (char.IsDigit(c)) // Number (integer)?
+        {
+            StringBuilder text = new StringBuilder(c.ToString());
+            Read();
+            c = Peek();
+            while (char.IsDigit(c))
+            {
+                text.Append(c);
+                Read();
+                c = Peek();
+            }
+
+            bool result = int.TryParse(text.ToString(), out int value);
+            if (result)
+            {
+                CurrentSymbol = Symbol.Numeral;
+                Argument = value;
+            }
+            else
+            {
+                CurrentSymbol = Symbol.IntegerOutOfBounds;
+            }
+        }
+        else
+        {
+            switch (c)
+            {
+                case '@':
                     {
-                        this.NewLine();
+                        Read();
+                        CurrentSymbol = Symbol.Procedure;
+
+                        break;
                     }
 
-                    this.Read();
-                }
+                case ';':           // Semicolon
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.SemiColon;
 
-                c = this.Peek();
+                        break;
+                    }
+
+                case ',':           // Comma
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Comma;
+
+                        break;
+                    }
+
+                case '&':           // And
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.And;
+
+                        break;
+                    }
+
+                case '|':           // Or
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Or;
+
+                        break;
+                    }
+
+                case '!':           // Not or NotEqual
+                    {
+                        Read();
+                        c = Peek();
+                        if (c == '=')     // NotEqual
+                        {
+                            Read();
+                            CurrentSymbol = Symbol.NotEqual;
+                        }
+                        else              // Not
+                        {
+                            CurrentSymbol = Symbol.Not;
+                        }
+
+                        break;
+                    }
+
+                case '=':           // Becomes or Equal
+                    {
+                        Read();
+                        c = Peek();
+                        if (c == '=')     // Equal
+                        {
+                            Read();
+                            CurrentSymbol = Symbol.Equal;
+                        }
+                        else              // Becomes
+                        {
+                            CurrentSymbol = Symbol.Becomes;
+                        }
+
+                        break;
+                    }
+
+                case '>':           // GreaterOrEqual or Greater
+                    {
+                        Read();
+                        c = Peek();
+                        if (c == '=')     // GreaterOrEqual
+                        {
+                            Read();
+                            CurrentSymbol = Symbol.GreaterOrEqual;
+                        }
+                        else              // Greater
+                        {
+                            CurrentSymbol = Symbol.Greater;
+                        }
+
+                        break;
+                    }
+
+                case '<':           // LessOrEqual or Less
+                    {
+                        Read();
+                        c = Peek();
+                        if (c == '=')     // LessOrEqual
+                        {
+                            Read();
+                            CurrentSymbol = Symbol.LessOrEqual;
+                        }
+                        else              // Less
+                        {
+                            CurrentSymbol = Symbol.Less;
+                        }
+
+                        break;
+                    }
+
+                case '+':           // Plus
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Plus;
+
+                        break;
+                    }
+
+                case '-':           // Through or Minus
+                    {
+                        Read();
+                        c = Peek();
+                        if (c == '>')     // Through
+                        {
+                            Read();
+                            CurrentSymbol = Symbol.Through;
+                        }
+                        else              // Minus
+                        {
+                            CurrentSymbol = Symbol.Minus;
+                        }
+
+                        break;
+                    }
+
+                case '*':           // Multiply
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Multiply;
+
+                        break;
+                    }
+
+                case '/':           // Divide
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Divide;
+
+                        break;
+                    }
+
+                case '%':           // Modulo
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Modulo;
+
+                        break;
+                    }
+
+                case '^':           // Power
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Power;
+
+                        break;
+                    }
+
+                case '{':           // Begin
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Begin;
+
+                        break;
+                    }
+
+                case '}':           // End
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.End;
+
+                        break;
+                    }
+
+                case '[':           // LeftBracket
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.LeftBracket;
+
+                        break;
+                    }
+
+                case ']':           // RightBracket
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.RightBracket;
+
+                        break;
+                    }
+
+                case '(':           // LeftParanthesis
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.LeftParanthesis;
+
+                        break;
+                    }
+
+                case ')':           // RightParanthesis
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.RightParanthesis;
+
+                        break;
+                    }
+
+                case char.MaxValue:
+                case char.MinValue: // EndOfText
+                    {
+                        CurrentSymbol = Symbol.EndOfText;
+                        next = false;
+
+                        break;
+                    }
+
+                default:            // Unknown
+                    {
+                        Read();
+                        CurrentSymbol = Symbol.Unknown;
+                        c = Peek();
+                        while ((!(IsDelimiter(c))) && (c != char.MinValue))
+                        {
+                            Read();
+                            c = Peek();
+                        }
+
+                        break;
+                    }
             }
+        }
 
-            if (char.IsLetter(c)) // Variable / Keyword?
+        Trace.WriteLine($"Scanner: Symbol = {CurrentSymbol}, Line = {LineNumber}.");
+        return next;
+    }
+
+    /// <summary>
+    /// Defines the keywords in the language.
+    /// </summary>
+    void DefineKeywords()
+    {
+        DefineKeyword("boolean", Symbol.Boolean);
+        DefineKeyword("channel", Symbol.Channel);
+        DefineKeyword("constant", Symbol.Constant);
+        DefineKeyword("else", Symbol.Else);
+        DefineKeyword("false", Symbol.False);
+        DefineKeyword("if", Symbol.If);
+        DefineKeyword("integer", Symbol.Integer);
+        DefineKeyword("open", Symbol.Open);
+        DefineKeyword("parallel", Symbol.Parallel);
+        DefineKeyword("randomize", Symbol.Randomize);
+        DefineKeyword("read", Symbol.Read);
+        DefineKeyword("receive", Symbol.Receive);
+        DefineKeyword("reference", Symbol.Reference);
+        DefineKeyword("send", Symbol.Send);
+        DefineKeyword("true", Symbol.True);
+        DefineKeyword("while", Symbol.While);
+        DefineKeyword("write", Symbol.Write);
+    }
+
+    /// <summary>
+    /// Defines a variable.
+    /// </summary>
+    /// <param name="spelling">
+    /// Variable name.
+    /// </param>
+    void DefineVariable(string spelling)
+    {
+        _wordList.Add(new WordRecord(spelling));
+    }
+
+    /// <summary>
+    /// Defines a keyword.
+    /// </summary>
+    /// <param name="spelling">
+    /// Keyword.
+    /// </param>
+    /// <param name="symbol">
+    /// Symbol for the keyword.
+    /// </param>
+    void DefineKeyword(string spelling, Symbol symbol)
+    {
+        _wordList.Add(new WordRecord(spelling, symbol));
+    }
+
+    /// <summary>
+    /// Searches for the given word in the word list.
+    /// If not found, defines the variable.
+    /// Sets the current symbol and Argument.
+    /// </summary>
+    /// <param name="word">
+    /// The word (variable / keyword) to be searched.
+    /// </param>
+    void Search(string word)
+    {
+        int count = 0;
+        int max = _wordList.Count;
+        bool found = false;
+        while ((count < max) && !found)
+        {
+            if (_wordList[count].Spelling == word)
             {
-                StringBuilder text = new StringBuilder(c.ToString());
-                this.Read();
-                c = this.Peek();
-                while (char.IsLetterOrDigit(c) || (c == '_'))
-                {
-                    text.Append(c);
-                    this.Read();
-                    c = this.Peek();
-                }
-
-                Search(text.ToString());
-            }
-            else if (char.IsDigit(c)) // Number (integer)?
-            {
-                StringBuilder text = new StringBuilder(c.ToString());
-                this.Read();
-                c = this.Peek();
-                while (char.IsDigit(c))
-                {
-                    text.Append(c);
-                    this.Read();
-                    c = this.Peek();
-                }
-
-                bool result = int.TryParse(text.ToString(), out int value);
-                if (result)
-                {
-                    this.CurrentSymbol = Symbol.Numeral;
-                    this.Argument = value;
-                }
-                else
-                {
-                    this.CurrentSymbol = Symbol.IntegerOutOfBounds;
-                }
+                found = true;
             }
             else
             {
-                switch (c)
-                {
-                    case '@':
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Procedure;
-
-                            break;
-                        }
-
-                    case ';':           // Semicolon
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.SemiColon;
-
-                            break;
-                        }
-
-                    case ',':           // Comma
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Comma;
-
-                            break;
-                        }
-
-                    case '&':           // And
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.And;
-
-                            break;
-                        }
-
-                    case '|':           // Or
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Or;
-
-                            break;
-                        }
-
-                    case '!':           // Not or NotEqual
-                        {
-                            this.Read();
-                            c = this.Peek();
-                            if (c == '=')     // NotEqual
-                            {
-                                this.Read();
-                                this.CurrentSymbol = Symbol.NotEqual;
-                            }
-                            else              // Not
-                            {
-                                this.CurrentSymbol = Symbol.Not;
-                            }
-
-                            break;
-                        }
-
-                    case '=':           // Becomes or Equal
-                        {
-                            this.Read();
-                            c = this.Peek();
-                            if (c == '=')     // Equal
-                            {
-                                this.Read();
-                                this.CurrentSymbol = Symbol.Equal;
-                            }
-                            else              // Becomes
-                            {
-                                this.CurrentSymbol = Symbol.Becomes;
-                            }
-
-                            break;
-                        }
-
-                    case '>':           // GreaterOrEqual or Greater
-                        {
-                            this.Read();
-                            c = this.Peek();
-                            if (c == '=')     // GreaterOrEqual
-                            {
-                                this.Read();
-                                this.CurrentSymbol = Symbol.GreaterOrEqual;
-                            }
-                            else              // Greater
-                            {
-                                this.CurrentSymbol = Symbol.Greater;
-                            }
-
-                            break;
-                        }
-
-                    case '<':           // LessOrEqual or Less
-                        {
-                            this.Read();
-                            c = this.Peek();
-                            if (c == '=')     // LessOrEqual
-                            {
-                                this.Read();
-                                this.CurrentSymbol = Symbol.LessOrEqual;
-                            }
-                            else              // Less
-                            {
-                                this.CurrentSymbol = Symbol.Less;
-                            }
-
-                            break;
-                        }
-
-                    case '+':           // Plus
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Plus;
-
-                            break;
-                        }
-
-                    case '-':           // Through or Minus
-                        {
-                            this.Read();
-                            c = this.Peek();
-                            if (c == '>')     // Through
-                            {
-                                this.Read();
-                                this.CurrentSymbol = Symbol.Through;
-                            }
-                            else              // Minus
-                            {
-                                this.CurrentSymbol = Symbol.Minus;
-                            }
-
-                            break;
-                        }
-
-                    case '*':           // Multiply
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Multiply;
-
-                            break;
-                        }
-
-                    case '/':           // Divide
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Divide;
-
-                            break;
-                        }
-
-                    case '%':           // Modulo
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Modulo;
-
-                            break;
-                        }
-
-                    case '^':           // Power
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Power;
-
-                            break;
-                        }
-
-                    case '{':           // Begin
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Begin;
-
-                            break;
-                        }
-
-                    case '}':           // End
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.End;
-
-                            break;
-                        }
-
-                    case '[':           // LeftBracket
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.LeftBracket;
-
-                            break;
-                        }
-
-                    case ']':           // RightBracket
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.RightBracket;
-
-                            break;
-                        }
-
-                    case '(':           // LeftParanthesis
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.LeftParanthesis;
-
-                            break;
-                        }
-
-                    case ')':           // RightParanthesis
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.RightParanthesis;
-
-                            break;
-                        }
-
-                    case char.MaxValue:
-                    case char.MinValue: // EndOfText
-                        {
-                            this.CurrentSymbol = Symbol.EndOfText;
-                            next = false;
-
-                            break;
-                        }
-
-                    default:            // Unknown
-                        {
-                            this.Read();
-                            this.CurrentSymbol = Symbol.Unknown;
-                            c = this.Peek();
-                            while ((!(this.IsDelimiter(c))) && (c != char.MinValue))
-                            {
-                                this.Read();
-                                c = this.Peek();
-                            }
-
-                            break;
-                        }
-                }
+                ++count;
             }
-
-            Trace.WriteLine($"Scanner: Symbol = {this.CurrentSymbol}, Line = {this.LineNumber}.");
-            return next;
         }
 
-        /// <summary>
-        /// Defines the keywords in the language.
-        /// </summary>
-        void DefineKeywords()
+        if (found)
         {
-            this.DefineKeyword("boolean", Symbol.Boolean);
-            this.DefineKeyword("channel", Symbol.Channel);
-            this.DefineKeyword("constant", Symbol.Constant);
-            this.DefineKeyword("else", Symbol.Else);
-            this.DefineKeyword("false", Symbol.False);
-            this.DefineKeyword("if", Symbol.If);
-            this.DefineKeyword("integer", Symbol.Integer);
-            this.DefineKeyword("open", Symbol.Open);
-            this.DefineKeyword("parallel", Symbol.Parallel);
-            this.DefineKeyword("randomize", Symbol.Randomize);
-            this.DefineKeyword("read", Symbol.Read);
-            this.DefineKeyword("receive", Symbol.Receive);
-            this.DefineKeyword("reference", Symbol.Reference);
-            this.DefineKeyword("send", Symbol.Send);
-            this.DefineKeyword("true", Symbol.True);
-            this.DefineKeyword("while", Symbol.While);
-            this.DefineKeyword("write", Symbol.Write);
-        }
-
-        /// <summary>
-        /// Defines a variable.
-        /// </summary>
-        /// <param name="spelling">
-        /// Variable name.
-        /// </param>
-        void DefineVariable(string spelling)
-        {
-            this.wordList.Add(new WordRecord(spelling));
-        }
-
-        /// <summary>
-        /// Defines a keyword.
-        /// </summary>
-        /// <param name="spelling">
-        /// Keyword.
-        /// </param>
-        /// <param name="symbol">
-        /// Symbol for the keyword.
-        /// </param>
-        void DefineKeyword(string spelling, Symbol symbol)
-        {
-            this.wordList.Add(new WordRecord(spelling, symbol));
-        }
-
-        /// <summary>
-        /// Searches for the given word in the word list.
-        /// If not found, defines the variable.
-        /// Sets the current symbol and Argument.
-        /// </summary>
-        /// <param name="word">
-        /// The word (variable / keyword) to be searched.
-        /// </param>
-        void Search(string word)
-        {
-            int count = 0;
-            int max = this.wordList.Count;
-            bool found = false;
-            while ((count < max) && !found)
+            if (_wordList[count].IsVariable)
             {
-                if (this.wordList[count].Spelling == word)
-                {
-                    found = true;
-                }
-                else
-                {
-                    ++count;
-                }
-            }
-
-            if (found)
-            {
-                if (this.wordList[count].IsVariable)
-                {
-                    this.CurrentSymbol = Symbol.Name;
-                    this.Argument = this.wordList[count].Argument;
-                }
-                else
-                {
-                    this.CurrentSymbol = this.wordList[count].Symbol;
-                }
+                CurrentSymbol = Symbol.Name;
+                Argument = _wordList[count].Argument;
             }
             else
             {
-                this.CurrentSymbol = Symbol.Name;
-                this.Argument = WordRecord.VariableCount;
-                DefineVariable(word);
+                CurrentSymbol = _wordList[count].Symbol;
             }
         }
-
-        /// <summary>
-        /// Gets the next character in the stream.
-        /// </summary>
-        /// <param name="read">
-        /// read = true:  reads the next character.
-        ///      = false: peeks at the next character.
-        /// </param>
-        /// <returns>
-        /// The next character in the stream.
-        /// For EOF:         returns char.MinValue
-        /// For null stream: returns char.MaxValue
-        /// </returns>
-        char Next(bool read)
+        else
         {
-            char c;
-            if (this.reader == null)
-            {
-                c = char.MaxValue;
-            }
-            else
-            {
-                int value;
-                value = read ? this.reader.Read() : this.reader.Peek();
-                c = (value == -1) ? char.MinValue : Convert.ToChar(value);
-            }
+            CurrentSymbol = Symbol.Name;
+            Argument = WordRecord.VariableCount;
+            DefineVariable(word);
+        }
+    }
 
-            return c;
+    /// <summary>
+    /// Gets the next character in the stream.
+    /// </summary>
+    /// <param name="read">
+    /// read = true:  reads the next character.
+    ///      = false: peeks at the next character.
+    /// </param>
+    /// <returns>
+    /// The next character in the stream.
+    /// For EOF:         returns char.MinValue
+    /// For null stream: returns char.MaxValue
+    /// </returns>
+    char Next(bool read)
+    {
+        char c;
+        if (_reader == null)
+        {
+            c = char.MaxValue;
+        }
+        else
+        {
+            int value;
+            value = read ? _reader.Read() : _reader.Peek();
+            c = (value == -1) ? char.MinValue : Convert.ToChar(value);
         }
 
-        /// <summary>
-        /// Peeks at the next character in the stream.
-        /// </summary>
-        /// <returns>
-        /// The next character in the stream.
-        /// For EOF:         returns char.MinValue
-        /// For null stream: returns char.MaxValue
-        /// </returns>
-        char Peek()
+        return c;
+    }
+
+    /// <summary>
+    /// Peeks at the next character in the stream.
+    /// </summary>
+    /// <returns>
+    /// The next character in the stream.
+    /// For EOF:         returns char.MinValue
+    /// For null stream: returns char.MaxValue
+    /// </returns>
+    char Peek()
+    {
+        return Next(false);
+    }
+
+    /// <summary>
+    /// Reads the next character in the stream.
+    /// </summary>
+    /// <returns>
+    /// The next character in the stream.
+    /// For EOF:         returns char.MinValue
+    /// For null stream: returns char.MaxValue
+    /// </returns>
+    char Read()
+    {
+        return Next(true);
+    }
+
+    /// <summary>
+    /// Skips the current line.
+    /// </summary>
+    void SkipLine()
+    {
+        _reader.ReadLine();
+    }
+
+    /// <summary>
+    /// Processes start of a new line.
+    /// </summary>
+    void NewLine()
+    {
+        if (!(IsLineCorrect))
         {
-            return this.Next(false);
+            IsLineCorrect = true;
         }
 
-        /// <summary>
-        /// Reads the next character in the stream.
-        /// </summary>
-        /// <returns>
-        /// The next character in the stream.
-        /// For EOF:         returns char.MinValue
-        /// For null stream: returns char.MaxValue
-        /// </returns>
-        char Read()
-        {
-            return this.Next(true);
-        }
+        ++(LineNumber);
+    }
 
-        /// <summary>
-        /// Skips the current line.
-        /// </summary>
-        void SkipLine()
-        {
-            this.reader.ReadLine();
-        }
-
-        /// <summary>
-        /// Processes start of a new line.
-        /// </summary>
-        void NewLine()
-        {
-            if (!(this.IsLineCorrect))
-            {
-                this.IsLineCorrect = true;
-            }
-
-            ++(this.LineNumber);
-        }
-
-        /// <summary>
-        /// Is the given character a delimiter character?
-        /// </summary>
-        /// <param name="c">The given character.</param>
-        /// <returns>
-        /// A value indicating if the current character is a delimiter or not.
-        /// </returns>
-        bool IsDelimiter(char c)
-        {
-            return ((c == '$') ||
-                    (c == ' ') ||
-                    (c == '\t') ||
-                    (c == '\n') ||
-                    (c == '\r'));
-        }
+    /// <summary>
+    /// Is the given character a delimiter character?
+    /// </summary>
+    /// <param name="c">The given character.</param>
+    /// <returns>
+    /// A value indicating if the current character is a delimiter or not.
+    /// </returns>
+    bool IsDelimiter(char c)
+    {
+        return ((c == '$') ||
+                (c == ' ') ||
+                (c == '\t') ||
+                (c == '\n') ||
+                (c == '\r'));
     }
 }

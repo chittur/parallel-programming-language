@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = Node.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -13,26 +13,27 @@
 
 using System.Threading;
 
-namespace Parallelism
+namespace Parallelism;
+
+/// <summary>
+/// Abstract class for parallel nodes.
+/// </summary>
+public abstract class Node
 {
     /// <summary>
-    /// Abstract class for parallel nodes.
+    /// The parallel node-specific function.
     /// </summary>
-    public abstract class Node
-    {
-        /// <summary>
-        /// The parallel node-specific function.
-        /// </summary>
-        public abstract void Run();
+    public abstract void Run();
 
-        /// <summary>
-        /// Executes the parallel node function on a separate thread.
-        /// </summary>
-        protected virtual void Start()
+    /// <summary>
+    /// Executes the parallel node function on a separate thread.
+    /// </summary>
+    protected virtual void Start()
+    {
+        Thread worker = new Thread(new ThreadStart(Run))
         {
-            Thread worker = new Thread(new ThreadStart(this.Run));
-            worker.IsBackground = true;
-            worker.Start();
-        }
+            IsBackground = true
+        };
+        worker.Start();
     }
 }

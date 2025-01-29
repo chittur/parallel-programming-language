@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyTitle>UnitTesting</AssemblyTitle>
+    <Product>UnitTesting</Product>
+    <Copyright>Copyright ©  2022</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Compilation\Compilation.csproj" />
+    <ProjectReference Include="..\ErrorReporting\ErrorReporting.csproj" />
+    <ProjectReference Include="..\LanguageConstructs\LanguageConstructs.csproj" />
+    <ProjectReference Include="..\LexicalAnalysis\LexicalAnalysis.csproj" />
+    <ProjectReference Include="..\Parallelism\Parallelism.csproj" />
+    <ProjectReference Include="..\Runtime\Runtime.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.*" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+  </ItemGroup>
+</Project>

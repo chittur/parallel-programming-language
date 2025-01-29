@@ -1,29 +1,39 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexicalAnalysis", "LexicalAnalysis\LexicalAnalysis.csproj", "{0804C67B-71CE-4A08-8531-135116292946}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LexicalAnalysis", "LexicalAnalysis\LexicalAnalysis.csproj", "{0804C67B-71CE-4A08-8531-135116292946}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrammarAnalysis", "GrammarAnalysis\GrammarAnalysis.csproj", "{EA2BE3B6-2C2A-4A15-B40E-530D1D9D7CA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrammarAnalysis", "GrammarAnalysis\GrammarAnalysis.csproj", "{EA2BE3B6-2C2A-4A15-B40E-530D1D9D7CA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneration", "CodeGeneration\CodeGeneration.csproj", "{FCF3BEF8-915A-4C91-BF07-5714B252B071}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGeneration", "CodeGeneration\CodeGeneration.csproj", "{FCF3BEF8-915A-4C91-BF07-5714B252B071}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilation", "Compilation\Compilation.csproj", "{83D92772-440C-46A8-85CB-BDA505A1FFF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compilation", "Compilation\Compilation.csproj", "{83D92772-440C-46A8-85CB-BDA505A1FFF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Executive", "Executive\Executive.csproj", "{190FA3A8-6BBF-4B39-9B85-AE8F92A28871}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Executive", "Executive\Executive.csproj", "{190FA3A8-6BBF-4B39-9B85-AE8F92A28871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intermediary", "Intermediary\Intermediary.csproj", "{91DC2921-598A-486A-B5C0-8A9E831C2EC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Intermediary", "Intermediary\Intermediary.csproj", "{91DC2921-598A-486A-B5C0-8A9E831C2EC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorReporting", "ErrorReporting\ErrorReporting.csproj", "{44CCE1D7-3874-441C-90FB-BB6468DDF80C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErrorReporting", "ErrorReporting\ErrorReporting.csproj", "{44CCE1D7-3874-441C-90FB-BB6468DDF80C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageConstructs", "LanguageConstructs\LanguageConstructs.csproj", "{3C14AC61-7147-4261-AD3C-BE52D4308DF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageConstructs", "LanguageConstructs\LanguageConstructs.csproj", "{3C14AC61-7147-4261-AD3C-BE52D4308DF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runtime", "Runtime\Runtime.csproj", "{78BF3FB4-447F-4242-834F-111E9B20F042}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runtime", "Runtime\Runtime.csproj", "{78BF3FB4-447F-4242-834F-111E9B20F042}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parallelism", "Parallelism\Parallelism.csproj", "{8B71858C-A2EF-46D0-85D0-B8260D3356FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parallelism", "Parallelism\Parallelism.csproj", "{8B71858C-A2EF-46D0-85D0-B8260D3356FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "UnitTesting\UnitTesting.csproj", "{B7BD58EB-9E47-4BB2-90B7-979489196563}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F0E138C-AD10-413C-B2BA-C9E68D4A6DFE}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		CONTRIBUTING.md = CONTRIBUTING.md
+		License.txt = License.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{322C250C-C2DB-4022-AF3A-D341592787AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,10 +81,10 @@ Global
 		{8B71858C-A2EF-46D0-85D0-B8260D3356FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B71858C-A2EF-46D0-85D0-B8260D3356FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B71858C-A2EF-46D0-85D0-B8260D3356FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7BD58EB-9E47-4BB2-90B7-979489196563}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7BD58EB-9E47-4BB2-90B7-979489196563}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7BD58EB-9E47-4BB2-90B7-979489196563}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7BD58EB-9E47-4BB2-90B7-979489196563}.Release|Any CPU.Build.0 = Release|Any CPU
+		{322C250C-C2DB-4022-AF3A-D341592787AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{322C250C-C2DB-4022-AF3A-D341592787AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{322C250C-C2DB-4022-AF3A-D341592787AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{322C250C-C2DB-4022-AF3A-D341592787AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

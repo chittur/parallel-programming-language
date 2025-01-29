@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = ParameterRecord.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -14,21 +14,20 @@
 using LanguageConstructs;
 using Type = LanguageConstructs.Type;
 
-namespace GrammarAnalysis
+namespace GrammarAnalysis;
+
+/// <summary>
+/// A record for holding metadata of parameters.
+/// </summary>
+public struct ParameterRecord
 {
     /// <summary>
-    /// A record for holding metadata of parameters.
+    /// Gets or sets the type of the parameter.
     /// </summary>
-    public struct ParameterRecord
-    {
-        /// <summary>
-        /// Gets or sets the type of the parameter.
-        /// </summary>
-        public Type ParameterType { get; set; }
+    public Type ParameterType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the kind of the parameter.
-        /// </summary>
-        public Kind ParameterKind { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the kind of the parameter.
+    /// </summary>
+    public Kind ParameterKind { get; set; }
 }

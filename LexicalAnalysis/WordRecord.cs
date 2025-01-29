@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = WordRecord.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -13,86 +13,85 @@
 
 using LanguageConstructs;
 
-namespace LexicalAnalysis
+namespace LexicalAnalysis;
+
+/// <summary>
+/// Record for variables and keywords.
+/// </summary>
+internal class WordRecord
 {
     /// <summary>
-    /// Record for variables and keywords.
+    /// Is the word a variable? if not, it is a keyword.
     /// </summary>
-    internal class WordRecord
+    public readonly bool IsVariable;
+
+    /// <summary>
+    /// Spelling of the word.
+    /// </summary>
+    public readonly string Spelling;
+
+    /// <summary>
+    /// Symbol of the word.
+    /// </summary>
+    public readonly Symbol Symbol;
+
+    /// <summary>
+    /// Argument of the word.
+    /// </summary>
+    public readonly int Argument;
+
+    // Static constructor. Initializes the static variable.
+    static WordRecord()
     {
-        /// <summary>
-        /// Is the word a variable? if not, it is a keyword.
-        /// </summary>
-        public readonly bool IsVariable;
+        WordRecord.VariableCount = 0;
+    }
 
-        /// <summary>
-        /// Spelling of the word.
-        /// </summary>
-        public readonly string Spelling;
+    /// <summary>
+    /// Defines a new word record for a variable.
+    /// </summary>
+    /// <param name="spelling">
+    /// Variable name.
+    /// </param>
+    public WordRecord(string spelling)
+    {
+        IsVariable = true;
+        Spelling = spelling;
+        Symbol = Symbol.Name;
+        Argument = WordRecord.VariableCount;
 
-        /// <summary>
-        /// Symbol of the word.
-        /// </summary>
-        public readonly Symbol Symbol;
+        ++(WordRecord.VariableCount);
+    }
 
-        /// <summary>
-        /// Argument of the word.
-        /// </summary>
-        public readonly int Argument;
+    /// <summary>
+    /// Defines a new word record for a keyword.
+    /// </summary>
+    /// <param name="spelling">
+    /// Keyword.
+    /// </param>
+    /// <param name="symbol">
+    /// Symbol of the keyword.
+    /// </param>
+    public WordRecord(string spelling, Symbol symbol)
+    {
+        Spelling = spelling;
+        Symbol = symbol;
 
-        // Static constructor. Initializes the static variable.
-        static WordRecord()
+        if (symbol == Symbol.Name)
         {
-            WordRecord.VariableCount = 0;
-        }
-
-        /// <summary>
-        /// Defines a new word record for a variable.
-        /// </summary>
-        /// <param name="spelling">
-        /// Variable name.
-        /// </param>
-        public WordRecord(string spelling)
-        {
-            this.IsVariable = true;
-            this.Spelling = spelling;
-            this.Symbol = Symbol.Name;
-            this.Argument = WordRecord.VariableCount;
+            IsVariable = true;
+            Argument = WordRecord.VariableCount;
 
             ++(WordRecord.VariableCount);
         }
-
-        /// <summary>
-        /// Defines a new word record for a keyword.
-        /// </summary>
-        /// <param name="spelling">
-        /// Keyword.
-        /// </param>
-        /// <param name="symbol">
-        /// Symbol of the keyword.
-        /// </param>
-        public WordRecord(string spelling, Symbol symbol)
+        else
         {
-            this.Spelling = spelling;
-            this.Symbol = symbol;
-
-            if (symbol == Symbol.Name)
-            {
-                this.IsVariable = true;
-                this.Argument = WordRecord.VariableCount;
-
-                ++(WordRecord.VariableCount);
-            }
-            else
-            {
-                this.IsVariable = false;
-                this.Argument = -1;
-            }
+            IsVariable = false;
+            Argument = -1;
         }
-
-        /// <summary>
-        /// Gets the total number of defined variables.
-        /// </summary>
-        public static int VariableCount { get; private set; }
     }
+
+    /// <summary>
+    /// Gets the total number of defined variables.
+    /// </summary>
+    public static int VariableCount { get; private set; }
 }

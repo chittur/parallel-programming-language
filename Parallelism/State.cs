@@ -11,26 +11,25 @@
  *               of a messaging channel.
  *****************************************************************************/
 
-namespace Parallelism
+namespace Parallelism;
+
+/// <summary>
+/// Enumerates the various states of a messaging channel.
+/// </summary>
+internal enum State
 {
     /// <summary>
-    /// Enumerates the various states of a messaging channel.
+    /// The channel is in idle state.
     /// </summary>
-    internal enum State
-    {
-        /// <summary>
-        /// The channel is in idle state.
-        /// </summary>
-        Idle,
+    Idle,
 
-        /// <summary>
-        /// Data has been sent through the channel.
-        /// </summary>
-        Sent,
+    /// <summary>
+    /// Data has been sent through the channel.
+    /// </summary>
+    Sent,
 
-        /// <summary>
-        /// Data has been received through the channel.
-        /// </summary>
-        Received
-    }
+    /// <summary>
+    /// Data has been received through the channel.
+    /// </summary>
+    Received
 }

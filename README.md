@@ -10,7 +10,7 @@ Some of the highlights of this language are:
 - **Portable compiler**. The compiler produces intermediate code. By writing a simple target-specific interpreter, the intermediate code can be made to run on any new platform.
 - **Strong type checking**. Types may not be mixed. Booleans cannot be assigned to Integers, or vice versa. Same goes for the Channel type. *if* and *while* loop expressions must evaluate to a Boolean. C and C++ do not support this instrinically where you could pass an integer expression into a if/while loop. That is semantically poor.
 - **Parallel assignment**. You could do *a, b = c, 4 + 5;*. That is assigning multiple variables in a single statement. This is elegant. And it helps do away with a temporary variable for swapping operations - you can do *a , b = b, a;*.
-- **Pass by reference**. Functions can take parameters by value or by reference. The language also enforces that the keyword *reference* is used at the function's caller end as well, so that it is clear to the reader whether the parameter is by reference or by value. This is enforcing strong semantics and clarity. Contrast this with C++ where a function call can look like *Test(a);*. But the reader cannot tell without diving into the function signature whether the parameter *a* is *pass by reference* or *pass by value*. In this language, the call would like *Test(reference a);*.
+- **Pass by reference**. Functions can take parameters by value or by reference. The language also enforces that the keyword *reference* is used at the function's caller end as well, so that it is clear to the reader whether the parameter is by reference or by value. This is enforcing strong semantics and clarity. Contrast this with C++ where a function call can look like *Test(a);*. But the reader cannot tell without diving into the function signature whether the parameter *a* is *pass by reference* or *pass by value*. In this language, the call would look like *Test(reference a);*.
 - **Bound checking on array access**. Array access is bound-checked at runtime so that unintended memory is not accessed. This is not supported by even advanced languages like C and C++.
 - **Supports recursive functions**. Function recursion adds elegance, and is supported in this language. Many high level languages like the traditional Fortran dont support it, which can be pretty restrictive.
 - **In-built parallel constructs**. This language supports parallel programming instrinsically. Programmers can think of and implement parallel programs elegantly and securely without trying to build contrived skeletons and frameworks to support them.
@@ -139,7 +139,7 @@ In the folder named Samples, you will see some programs that should help you fam
 - **Parallel-AddDigits.txt**: Parallel program to find the sum of the squares of the digits in a number. Demonstrates ***parallel recursion***.
 
 ## Running the project
-This project includes the compiler and the runtime for the parallel programming language discussed above, and is implemented in C# with Visual Studio 2019.
+This project includes the compiler and the runtime for the parallel programming language discussed above, and is implemented in C# with Visual Studio Community 2022.
 
 To run it:
 - Download and build the Visual Studio Solution shared in this repository.

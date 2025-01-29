@@ -1,0 +1,91 @@
+trigger:
+- main
+
+pool:
+  name: Default
+
+variables:
+  buildConfiguration: 'Release'
+  coverageFilePath: '$(Build.SourcesDirectory)\\TestResults\\coverage\\coverage.cobertura.xml'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK 8.0'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet Packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Solution'
+  inputs:
+    command: 'build'
+    projects: '**/*.sln'
+    arguments: '--configuration $(buildConfiguration)'
+
+- powershell: |
+    $dotnetFormat = dotnet tool list -g | Select-String 'dotnet-format'
+    if (-not $dotnetFormat) {
+      dotnet tool install -g dotnet-format
+    }
+    $env:PATH += ';' + [System.Environment]::GetFolderPath('UserProfile') + '\.dotnet\tools'
+  displayName: 'Ensure dotnet-format is installed and add to PATH'
+
+- powershell: |
+    dotnet format --verify-no-changes
+  displayName: 'Run .editorconfig checks'
+  continueOnError: false # This will fail the pipeline if there are any formatting issues
+
+- powershell: |
+    New-Item -ItemType Directory -Force -Path $(Build.SourcesDirectory)\\TestResults\\coverage
+  displayName: 'Create Coverage Directory'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests with Coverage'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Agent.TempDirectory)\\coverage.cobertura.xml'
+  continueOnError: false
+
+- powershell: |
+    Get-ChildItem -Path $(Agent.TempDirectory) -Filter 'coverage.cobertura.xml' -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | ForEach-Object { Move-Item -Path $_.FullName -Destination '$(coverageFilePath)' }
+  displayName: 'Move Latest Coverage File'
+
+- powershell: |
+    $reportGenerator = dotnet tool list -g | Select-String 'dotnet-reportgenerator-globaltool'
+    if (-not $reportGenerator) {
+      dotnet tool install --global dotnet-reportgenerator-globaltool
+    }
+    $env:PATH += ';' + [System.Environment]::GetFolderPath('UserProfile') + '\\.dotnet\\tools'
+  displayName: 'Ensure ReportGenerator is installed and add to PATH'
+
+- powershell: |
+    if (Test-Path $(coverageFilePath)) {
+      reportgenerator -reports:$(coverageFilePath) -targetdir:$(Build.SourcesDirectory)\\CodeCoverage -reporttypes:Html
+    } else {
+      Write-Host "##vso[task.logissue type=error]Coverage file not found: $(coverageFilePath)"
+      exit 1
+    }
+  displayName: 'Generate Code Coverage Report'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\\CodeCoverage'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\\CodeCoverage'
+  displayName: 'Copy Code Coverage HTML to Staging Directory'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(coverageFilePath)'
+    reportDirectory: '$(Build.SourcesDirectory)\\CodeCoverage'
+    failIfCoverageEmpty: true
+  displayName: 'Publish Code Coverage Results'

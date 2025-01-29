@@ -1,77 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{83D92772-440C-46A8-85CB-BDA505A1FFF2}</ProjectGuid>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Compilation</RootNamespace>
-    <AssemblyName>Compilation</AssemblyName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyTitle>Compilation</AssemblyTitle>
+    <Product>Compilation</Product>
+    <Copyright>Copyright ©  2007</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Compilation.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\CodeGeneration\CodeGeneration.csproj" />
+    <ProjectReference Include="..\ErrorReporting\ErrorReporting.csproj" />
+    <ProjectReference Include="..\GrammarAnalysis\GrammarAnalysis.csproj" />
+    <ProjectReference Include="..\LanguageConstructs\LanguageConstructs.csproj" />
+    <ProjectReference Include="..\LexicalAnalysis\LexicalAnalysis.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Parser.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CodeGeneration\CodeGeneration.csproj">
-      <Project>{FCF3BEF8-915A-4C91-BF07-5714B252B071}</Project>
-      <Name>CodeGeneration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ErrorReporting\ErrorReporting.csproj">
-      <Project>{44CCE1D7-3874-441C-90FB-BB6468DDF80C}</Project>
-      <Name>ErrorReporting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GrammarAnalysis\GrammarAnalysis.csproj">
-      <Project>{EA2BE3B6-2C2A-4A15-B40E-530D1D9D7CA5}</Project>
-      <Name>GrammarAnalysis</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LanguageConstructs\LanguageConstructs.csproj">
-      <Project>{3C14AC61-7147-4261-AD3C-BE52D4308DF7}</Project>
-      <Name>LanguageConstructs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LexicalAnalysis\LexicalAnalysis.csproj">
-      <Project>{0804C67B-71CE-4A08-8531-135116292946}</Project>
-      <Name>LexicalAnalysis</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
