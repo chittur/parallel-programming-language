@@ -143,6 +143,6 @@ $ less than 10 to the power of -24.
 
     result = 1;
     send result -> channels[1];
-    receive result -> channels[mx];
+    receive result -> channels[max];
     write (result == max);
 }
