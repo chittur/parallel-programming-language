@@ -144,10 +144,11 @@ public class EndToEndTests
 
               @ Process()
               {
-                integer i;
-                boolean b;
+                integer i, j;
+                boolean b, c;
 
-                read i, b;
+                read i, b, c;
+                randomize j;
                 i = i ^ 2;
                 i = i + 1 - 1;
                 i = i * (3 % 2);
@@ -155,10 +156,10 @@ public class EndToEndTests
 
                 b = b & true;
                 b = b | false;
-                b = b & (3 < 4) & (3 > 2) & (3 == 3) & (3 != 4) & (3 <= 4) & (3 >= 2);
+                b = (j != j) | (b & (3 < 4) & (3 > 2) & (3 == 3) & (3 != 4) & (3 <= 4) & (3 >= 2));
                 b = Invert(b);
 
-                write i, b;
+                write i, b, Invert(c);
               }
 
               Process();
@@ -166,10 +167,10 @@ public class EndToEndTests
             ";
 
         // Input to the program.
-        const string Input = "15\r\ntrue\r\n";
+        const string Input = "15\r\ntrue\r\nfalse\r\n";
 
         // Expected output of the program.
-        const string Expected = "225\r\nfalse\r\n";
+        const string Expected = "225\r\nfalse\r\ntrue\r\n";
 
         // Validate that the program produces the expected output.
         Validate(Code, Input, Expected);
