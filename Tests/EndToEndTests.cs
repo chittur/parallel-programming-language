@@ -120,10 +120,10 @@ public class EndToEndTests
             ";
 
         // Expected output of the program: Sum of sqaures of the digits of 13597.
-        const string Expected = "165\r\n";
+        string expected = $"165{Environment.NewLine}";
 
         // Validate that the program produces the expected output.
-        Validate(Code, string.Empty, Expected);
+        Validate(Code, string.Empty, expected);
     }
 
     /// <summary>
@@ -146,6 +146,8 @@ public class EndToEndTests
               {
                 integer i, j;
                 boolean b, c;
+                constant max = 5;
+                constant min = -max;
 
                 read i, b, c;
                 randomize j;
@@ -159,7 +161,7 @@ public class EndToEndTests
                 b = (j != j) | (b & (3 < 4) & (3 > 2) & (3 == 3) & (3 != 4) & (3 <= 4) & (3 >= 2));
                 b = Invert(b);
 
-                write i, b, Invert(c);
+                write i, b, Invert(c), i * 2;
               }
 
               Process();
@@ -167,13 +169,13 @@ public class EndToEndTests
             ";
 
         // Input to the program.
-        const string Input = "15\r\ntrue\r\nfalse\r\n";
+        string input = $"15{Environment.NewLine}true{Environment.NewLine}false{Environment.NewLine}";
 
         // Expected output of the program.
-        const string Expected = "225\r\nfalse\r\ntrue\r\n";
+        string expected = $"225{Environment.NewLine}false{Environment.NewLine}true{Environment.NewLine}450{Environment.NewLine}";
 
         // Validate that the program produces the expected output.
-        Validate(Code, Input, Expected);
+        Validate(Code, input, expected);
     }
 
     /// <summary>

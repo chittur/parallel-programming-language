@@ -41,7 +41,8 @@ public class ParserTests
                 constant c = i;         $ Error: NonConstantInConstantDefinition = 301
                 integer[0] array;       $ Error: NonPositiveIntegerIndexInArrayDeclaration = 304
                 j = i;                  $ Error: UndefinedName = 201
-                c = 10;                 $ Error: AssignmentModifiesConstant = 302
+                c = 10;                 $ Error: AssignmentModifiesConstant = 302   
+                i, c = 5, 10;           $ Error: AssignmentModifiesConstant = 302
                 i = array;              $ Error: ArrayVariableMissingIndexedSelector = 303
             }
             ";
@@ -54,6 +55,7 @@ public class ParserTests
                 (int)KindErrorCategory.NonConstantInConstantDefinition,
                 (int)KindErrorCategory.NonPositiveIntegerIndexInArrayDeclaration,
                 (int)ScopeErrorCategory.UndefinedName,
+                (int)KindErrorCategory.AssignmentModifiesConstant,
                 (int)KindErrorCategory.AssignmentModifiesConstant,
                 (int)KindErrorCategory.ArrayVariableMissingIndexedSelector,
             ];
@@ -234,6 +236,7 @@ public class ParserTests
                 receive b -> c;     $ Error: NonIntegerValueInReceiveStatement = 414
                 receive i -> z;     $ Error: NonChannelInReceiveStatement = 415
                 open b;             $ Error: NonChannelInOpenStatement = 416
+                open c, b;          $ Error: NonChannelInOpenStatement = 416
             }
             ";
 
@@ -258,6 +261,7 @@ public class ParserTests
                 (int)TypeErrorCategory.NonChannelInSendStatement,
                 (int)TypeErrorCategory.NonIntegerValueInReceiveStatement,
                 (int)TypeErrorCategory.NonChannelInReceiveStatement,
+                (int)TypeErrorCategory.NonChannelInOpenStatement,
                 (int)TypeErrorCategory.NonChannelInOpenStatement,
             ];
 

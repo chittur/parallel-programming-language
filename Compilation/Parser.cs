@@ -940,12 +940,11 @@ public class Parser
         }
 
         // Expect TypeSymbol.
-        parameterRecord.ParameterType = TypeSymbol(
-                                              new Set(typeSymbolStopSymbols,
-                                                      commaStopSymbols,
-                                                      referenceStopSymbols,
-                                                      parameterNameStopSymbols,
-                                                      stopSymbols));
+        parameterRecord.ParameterType = TypeSymbol(new Set(typeSymbolStopSymbols,
+                                                           commaStopSymbols,
+                                                           referenceStopSymbols,
+                                                           parameterNameStopSymbols,
+                                                           stopSymbols));
 
         // Add the parameter record to the parameter record list.
         parameterRecordList.Add(parameterRecord);
@@ -962,19 +961,19 @@ public class Parser
 
             // Expect ",".
             Expect(Symbol.Comma, new Set(referenceStopSymbols,
-                                              typeSymbolStopSymbols,
-                                              parameterNameStopSymbols,
-                                              commaStopSymbols,
-                                              stopSymbols));
+                                         typeSymbolStopSymbols,
+                                         parameterNameStopSymbols,
+                                         commaStopSymbols,
+                                         stopSymbols));
 
             // Reference parameter?
             if (IsCurrentSymbol(Symbol.Reference))
             {
                 Expect(Symbol.Reference, new Set(referenceStopSymbols,
-                                                      parameterNameStopSymbols,
-                                                      typeSymbolStopSymbols,
-                                                      commaStopSymbols,
-                                                      stopSymbols));
+                                                 parameterNameStopSymbols,
+                                                 typeSymbolStopSymbols,
+                                                 commaStopSymbols,
+                                                 stopSymbols));
                 parameterRecord.ParameterKind = Kind.ReferenceParameter;
             }
             else
@@ -983,12 +982,11 @@ public class Parser
             }
 
             // Expect TypeSymbol.
-            parameterRecord.ParameterType = TypeSymbol(
-                                                new Set(typeSymbolStopSymbols,
-                                                        commaStopSymbols,
-                                                        referenceStopSymbols,
-                                                        parameterNameStopSymbols,
-                                                        stopSymbols));
+            parameterRecord.ParameterType = TypeSymbol(new Set(typeSymbolStopSymbols,
+                                                               commaStopSymbols,
+                                                               referenceStopSymbols,
+                                                               parameterNameStopSymbols,
+                                                               stopSymbols));
 
             // Add the parameter record to the parameter record list.
             parameterRecordList.Add(parameterRecord);
@@ -1002,8 +1000,7 @@ public class Parser
         int max = parameterRecordList.Count;
         if (parameterList.Count != max)
         {
-            _annotator.InternalError(
-                                  InternalErrorCategory.InternalProcessingError);
+            _annotator.InternalError(InternalErrorCategory.InternalProcessingError);
         }
         else
         {
@@ -1019,9 +1016,7 @@ public class Parser
                 };
 
                 ObjectRecord newObjectRecord = new ObjectRecord();
-                _auditor.Define(parameterList[count],
-                                    metaData,
-                                    ref newObjectRecord);
+                _auditor.Define(parameterList[count], metaData, ref newObjectRecord);
             }
         }
     }
