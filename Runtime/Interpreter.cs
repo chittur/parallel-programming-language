@@ -24,24 +24,28 @@ namespace Runtime;
 /// </summary>
 public class Interpreter
 {
-    internal const int Max = 10002;             // Available memory for the each node.
-    internal int[] _store;                      // Memory.
-    internal int _endOfProgram;                 // End address for the program code.
-    internal List<Channel<int>> _channelList;   // List of channels.
-    internal bool _noGlobalErrors;              // No errors in any of the parallel nodes?
-    internal TextWriter _output;                // The output stream.
+    internal const int Max = 10002;                     // Available memory for the each node.
+    internal int[] Store { get; set; }                  // Memory.
+    internal int EndOfProgram { get; set; }             // End address for the program code.
+    internal List<Channel<int>> Channels { get; set; }  // List of channels.
+    internal bool NoGlobalErrors { get; set; }          // No errors in any of the parallel nodes?
+    internal TextReader Input { get; private set; }     // The input stream.
+    internal TextWriter Output { get; private set; }    // The output stream.
 
     /// <summary>
     /// Creates a new instance of Interpreter, which loads the intermediate
     /// code into memory and invokes the master translator node.
     /// </summary>
+    /// <param name="input">The input stream.</param>
     /// <param name="output">The output stream.</param>
-    public Interpreter(TextWriter output)
+
+    public Interpreter(TextReader input, TextWriter output)
     {
-        _store = new int[Max];
-        _noGlobalErrors = true;
-        _channelList = [];
-        this._output = output;
+        Store = new int[Max];
+        NoGlobalErrors = true;
+        Channels = [];
+        Input = input;
+        Output = output;
 
         // We add a null to the first element of the channel list. This is
         // because the memory is initialized to 0 by default. We don't want
@@ -52,7 +56,7 @@ public class Interpreter
         // indeterminate results. Of course, we can clean up the stack space
         // every time we blow up a stack, but this is highly inefficient from
         // a performance perspective and hence we are not going to do that here.
-        _channelList.Add(null);
+        Channels.Add(null);
     }
 
     /// <summary>
@@ -81,10 +85,10 @@ public class Interpreter
     /// <param name="message">Exception message</param>
     internal void HandleException(string message)
     {
-        _noGlobalErrors = false;
+        NoGlobalErrors = false;
         lock (this)
         {
-            _output.WriteLine(message);
+            Output.WriteLine(message);
         }
     }
 
@@ -105,10 +109,10 @@ public class Interpreter
         int count = 0;
         foreach (string line in lines)
         {
-            _store[count] = Convert.ToInt32(line);
+            Store[count] = Convert.ToInt32(line);
             ++count;
         }
 
-        _endOfProgram = count - 1;
+        EndOfProgram = count - 1;
     }
 }

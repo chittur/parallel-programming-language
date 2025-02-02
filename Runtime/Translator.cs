@@ -94,19 +94,19 @@ class Translator : Node
         _running = true;
 
         // Run the program.
-        while ((_running) && (_interpreter._noGlobalErrors))
+        while ((_running) && (_interpreter.NoGlobalErrors))
         {
             if (_programRegister >= (Interpreter.Max - 2))
             {
                 throw new Exception("Stack overflow.");
             }
 
-            Opcode opcode = (Opcode)(_interpreter._store[_programRegister]);
+            Opcode opcode = (Opcode)(_interpreter.Store[_programRegister]);
             switch (opcode)
             {
                 case Opcode.Program:
                     {
-                        Program(_interpreter._store[_programRegister + 1]);
+                        Program(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
@@ -118,7 +118,7 @@ class Translator : Node
 
                 case Opcode.Block:
                     {
-                        Block(_interpreter._store[_programRegister + 1]);
+                        Block(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
@@ -131,49 +131,49 @@ class Translator : Node
                 case Opcode.ProcedureBlock:
                     {
                         ProcedureBlock(
-                                        _interpreter._store[_programRegister + 1]);
+                                        _interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
                 case Opcode.ProcedureInvocation:
                     {
                         ProcedureInvocation(
-                                        _interpreter._store[_programRegister + 1],
-                                        _interpreter._store[_programRegister + 2]);
+                                        _interpreter.Store[_programRegister + 1],
+                                        _interpreter.Store[_programRegister + 2]);
                         break;
                     }
 
                 case Opcode.EndProcedureBlock:
                     {
                         EndProcedureBlock(
-                                        _interpreter._store[_programRegister + 1]);
+                                        _interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
                 case Opcode.Index:
                     {
-                        Index(_interpreter._store[_programRegister + 1]);
+                        Index(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
                 case Opcode.Variable:
                     {
-                        Variable(_interpreter._store[_programRegister + 1],
-                                      _interpreter._store[_programRegister + 2]);
+                        Variable(_interpreter.Store[_programRegister + 1],
+                                      _interpreter.Store[_programRegister + 2]);
                         break;
                     }
 
                 case Opcode.ReferenceParameter:
                     {
                         ReferenceParameter(
-                                      _interpreter._store[_programRegister + 1],
-                                      _interpreter._store[_programRegister + 2]);
+                                      _interpreter.Store[_programRegister + 1],
+                                      _interpreter.Store[_programRegister + 2]);
                         break;
                     }
 
                 case Opcode.Constant:
                     {
-                        Constant(_interpreter._store[_programRegister + 1]);
+                        Constant(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
@@ -299,7 +299,7 @@ class Translator : Node
 
                 case Opcode.Assign:
                     {
-                        Assign(_interpreter._store[_programRegister + 1]);
+                        Assign(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
@@ -311,13 +311,13 @@ class Translator : Node
 
                 case Opcode.Do:
                     {
-                        Do(_interpreter._store[_programRegister + 1]);
+                        Do(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
                 case Opcode.Goto:
                     {
-                        Goto(_interpreter._store[_programRegister + 1]);
+                        Goto(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
@@ -671,7 +671,7 @@ class Translator : Node
     void ReadBoolean()
     {
         --(_stackRegister);
-        string input = Console.ReadLine();
+        string input = _interpreter.Input.ReadLine();
         if (input.ToLower().Equals("true"))
         {
             _stack[_stack[_stackRegister + 1]] = 1;
@@ -697,7 +697,7 @@ class Translator : Node
         checked
         {
             _stack[_stack[_stackRegister + 1]] =
-                                              Convert.ToInt32(Console.ReadLine());
+                                              Convert.ToInt32(_interpreter.Input.ReadLine());
         }
 
         ++(_programRegister);
@@ -711,7 +711,7 @@ class Translator : Node
         --(_stackRegister);
         string output = (_stack[_stackRegister + 1] == 0)
                         ? "false" : "true";
-        _interpreter._output.WriteLine(output);
+        _interpreter.Output.WriteLine(output);
         ++(_programRegister);
     }
 
@@ -721,7 +721,7 @@ class Translator : Node
     void WriteInteger()
     {
         --(_stackRegister);
-        _interpreter._output.WriteLine(_stack[_stackRegister + 1]);
+        _interpreter.Output.WriteLine(_stack[_stackRegister + 1]);
         ++(_programRegister);
     }
 
@@ -779,11 +779,11 @@ class Translator : Node
     void Open()
     {
         --(_stackRegister);
-        lock (_interpreter._channelList)
+        lock (_interpreter.Channels)
         {
             _stack[_stack[_stackRegister + 1]] =
-                                                _interpreter._channelList.Count;
-            _interpreter._channelList.Add(new Channel<int>());
+                                                _interpreter.Channels.Count;
+            _interpreter.Channels.Add(new Channel<int>());
         }
 
         ++(_programRegister);
@@ -809,9 +809,9 @@ class Translator : Node
         --(_stackRegister);
         int key = _stack[_stackRegister + 1];
         bool error = false;
-        lock (_interpreter._channelList)
+        lock (_interpreter.Channels)
         {
-            if ((key < 1) || (key >= _interpreter._channelList.Count))
+            if ((key < 1) || (key >= _interpreter.Channels.Count))
             {
                 error = true;
             }
@@ -823,7 +823,7 @@ class Translator : Node
         }
         else
         {
-            _interpreter._channelList[key].Send(_stack[_stackRegister]);
+            _interpreter.Channels[key].Send(_stack[_stackRegister]);
             ++(_programRegister);
         }
     }
@@ -836,9 +836,9 @@ class Translator : Node
         --(_stackRegister);
         int key = _stack[_stackRegister + 1];
         bool error = false;
-        lock (_interpreter._channelList)
+        lock (_interpreter.Channels)
         {
-            if ((key < 1) || (key >= _interpreter._channelList.Count))
+            if ((key < 1) || (key >= _interpreter.Channels.Count))
             {
                 error = true;
             }
@@ -851,7 +851,7 @@ class Translator : Node
         else
         {
             _stack[_stack[_stackRegister]] =
-                                      _interpreter._channelList[key].Receive();
+                                      _interpreter.Channels[key].Receive();
             ++(_programRegister);
         }
     }
@@ -951,7 +951,7 @@ class Translator : Node
         _stack[_stackRegister - 1] = _baseRegister;
         if (_mainProcedure)
         {
-            _stack[_stackRegister] = _interpreter._endOfProgram;
+            _stack[_stackRegister] = _interpreter.EndOfProgram;
             _mainProcedure = false;
         }
         else

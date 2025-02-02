@@ -67,7 +67,7 @@ class Program
     /// <param name="filename">The intermediate code file.</param>
     static void Run(string filename)
     {
-        Interpreter interpreter = new Interpreter(Console.Out);
+        Interpreter interpreter = new Interpreter(Console.In, Console.Out);
         interpreter.RunProgram(filename);
     }
 
