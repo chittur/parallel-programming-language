@@ -142,6 +142,11 @@ public class EndToEndTests
                 result = !value;
               }
 
+              @ [integer result] Double(integer value)
+              {
+                result = value * 2;
+              }
+
               @ Process()
               {
                 integer i, j;
@@ -161,7 +166,7 @@ public class EndToEndTests
                 b = (j != j) | (b & (3 < 4) & (3 > 2) & (3 == 3) & (3 != 4) & (3 <= 4) & (3 >= 2));
                 b = Invert(b);
 
-                write i, b, Invert(c), i * 2;
+                write i, b, Invert(c), Double(i);
               }
 
               Process();

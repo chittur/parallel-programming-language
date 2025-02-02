@@ -403,4 +403,3 @@ FodyWeavers.xsd
 #Others
 *.sachin
 /Executive/Properties/launchSettings.json
-/Samples/Parallel-AddDigits-ReturnChannel.txt
