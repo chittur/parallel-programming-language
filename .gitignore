@@ -402,3 +402,4 @@ FodyWeavers.xsd
 
 #Others
 *.sachin
+/Executive/Properties/launchSettings.json
