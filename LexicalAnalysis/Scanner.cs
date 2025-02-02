@@ -25,8 +25,8 @@ namespace LexicalAnalysis;
 /// </summary>
 public class Scanner
 {
-    readonly List<WordRecord> _wordList; // List of variables + keywords.
-    readonly TextReader _reader; // Text input to be scanned.
+    private readonly List<WordRecord> _wordList; // List of variables + keywords.
+    private readonly TextReader _reader;         // Text input to be scanned.
 
     /// <summary>
     /// Creates an instance of the Scanner, which provides methods to scan a
@@ -42,7 +42,7 @@ public class Scanner
         CurrentSymbol = Symbol.Unknown;
         Argument = -1;
         _wordList = [];
-        this._reader = reader;
+        _reader = reader;
 
         // Define the keywords in this language.
         DefineKeywords();
@@ -374,7 +374,7 @@ public class Scanner
                         Read();
                         CurrentSymbol = Symbol.Unknown;
                         c = Peek();
-                        while ((!(IsDelimiter(c))) && (c != char.MinValue))
+                        while ((!IsDelimiter(c)) && (c != char.MinValue))
                         {
                             Read();
                             c = Peek();
@@ -392,7 +392,7 @@ public class Scanner
     /// <summary>
     /// Defines the keywords in the language.
     /// </summary>
-    void DefineKeywords()
+    private void DefineKeywords()
     {
         DefineKeyword("boolean", Symbol.Boolean);
         DefineKeyword("channel", Symbol.Channel);
@@ -419,7 +419,7 @@ public class Scanner
     /// <param name="spelling">
     /// Variable name.
     /// </param>
-    void DefineVariable(string spelling)
+    private void DefineVariable(string spelling)
     {
         _wordList.Add(new WordRecord(spelling));
     }
@@ -433,7 +433,7 @@ public class Scanner
     /// <param name="symbol">
     /// Symbol for the keyword.
     /// </param>
-    void DefineKeyword(string spelling, Symbol symbol)
+    private void DefineKeyword(string spelling, Symbol symbol)
     {
         _wordList.Add(new WordRecord(spelling, symbol));
     }
@@ -446,7 +446,7 @@ public class Scanner
     /// <param name="word">
     /// The word (variable / keyword) to be searched.
     /// </param>
-    void Search(string word)
+    private void Search(string word)
     {
         int count = 0;
         int max = _wordList.Count;
@@ -495,7 +495,7 @@ public class Scanner
     /// For EOF:         returns char.MinValue
     /// For null stream: returns char.MaxValue
     /// </returns>
-    char Next(bool read)
+    private char Next(bool read)
     {
         char c;
         if (_reader == null)
@@ -520,7 +520,7 @@ public class Scanner
     /// For EOF:         returns char.MinValue
     /// For null stream: returns char.MaxValue
     /// </returns>
-    char Peek()
+    private char Peek()
     {
         return Next(false);
     }
@@ -533,7 +533,7 @@ public class Scanner
     /// For EOF:         returns char.MinValue
     /// For null stream: returns char.MaxValue
     /// </returns>
-    char Read()
+    private char Read()
     {
         return Next(true);
     }
@@ -541,7 +541,7 @@ public class Scanner
     /// <summary>
     /// Skips the current line.
     /// </summary>
-    void SkipLine()
+    private void SkipLine()
     {
         _reader.ReadLine();
     }
@@ -549,14 +549,14 @@ public class Scanner
     /// <summary>
     /// Processes start of a new line.
     /// </summary>
-    void NewLine()
+    private void NewLine()
     {
-        if (!(IsLineCorrect))
+        if (!IsLineCorrect)
         {
             IsLineCorrect = true;
         }
 
-        ++(LineNumber);
+        ++LineNumber;
     }
 
     /// <summary>
@@ -566,12 +566,12 @@ public class Scanner
     /// <returns>
     /// A value indicating if the current character is a delimiter or not.
     /// </returns>
-    bool IsDelimiter(char c)
+    private static bool IsDelimiter(char c)
     {
-        return ((c == '$') ||
+        return (c == '$') ||
                 (c == ' ') ||
                 (c == '\t') ||
                 (c == '\n') ||
-                (c == '\r'));
+                (c == '\r');
     }
 }

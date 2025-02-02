@@ -28,14 +28,11 @@ public class Auditor
     ///           Variables accessed without being defined earlier.
     /// </summary>
     public const int NoName = -1;
-
-    Annotator _annotator;           // To print out any scope errors.
-    List<ObjectRecord> _blockTable; // List of references to the first object
-                                    // record in each scope level. Please note
-                                    // that the object record in turn is a 
-                                    // linked list and can be used to traverse
-                                    // to any other object record in the same
-                                    // scope.
+    private readonly Annotator _annotator;           // To print out any scope errors.
+    // List of references to the first object record in each scope level. Please note
+    // that the object record in turn is a  linked list and can be used to traverse
+    // to any other object record in the same scope.
+    private readonly List<ObjectRecord> _blockTable;
 
     /// <summary>
     /// Creates an instance of Auditor, which maintains the object
@@ -68,7 +65,7 @@ public class Auditor
             {
                 if (record.MetaData.Kind == Kind.Array)
                 {
-                    count = count + record.MetaData.UpperBound;
+                    count += record.MetaData.UpperBound;
                 }
                 else if (record.MetaData.Kind != Kind.Procedure)
                 {
@@ -87,7 +84,7 @@ public class Auditor
     /// </summary>
     public void NewBlock()
     {
-        ++(BlockLevel);
+        ++BlockLevel;
         _blockTable.Add(null);
     }
 
@@ -97,7 +94,7 @@ public class Auditor
     public void EndBlock()
     {
         _blockTable[BlockLevel] = null;
-        --(BlockLevel);
+        --BlockLevel;
     }
 
     /// <summary>
@@ -142,7 +139,7 @@ public class Auditor
             int level = BlockLevel;
             while ((level >= 0) && !found)
             {
-                found = Search(name, level, out ObjectRecord other);
+                found = Search(name, level, out _);
                 --level;
             }
         }
@@ -153,9 +150,9 @@ public class Auditor
         }
         else
         {
-            bool isInputParameter = ((metaData.Kind == Kind.ReferenceParameter) ||
-                                     (metaData.Kind == Kind.ValueParameter));
-            bool isProcedure = (metaData.Kind == Kind.Procedure);
+            bool isInputParameter = (metaData.Kind == Kind.ReferenceParameter) ||
+                                     (metaData.Kind == Kind.ValueParameter);
+            bool isProcedure = metaData.Kind == Kind.Procedure;
 
             objectRecord = new ObjectRecord
             {
@@ -202,7 +199,7 @@ public class Auditor
                     }
                     else if (record.MetaData.Kind == Kind.Array)
                     {
-                        displacement = displacement + record.MetaData.UpperBound;
+                        displacement += record.MetaData.UpperBound;
                     }
                     else if (record.MetaData.Kind != Kind.Procedure)
                     {
@@ -228,7 +225,7 @@ public class Auditor
     /// <returns>
     /// A value indicating if the object is defined in the specified scope.
     /// </returns>
-    bool Search(int name, int level, out ObjectRecord objectRecord)
+    private bool Search(int name, int level, out ObjectRecord objectRecord)
     {
         bool more = true;
         bool found = false;

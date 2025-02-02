@@ -30,16 +30,16 @@ namespace Compilation;
 /// </summary>
 public class Parser
 {
-    Stack<int> _procedureNest; // Current scope of nested procedures.
-    Scanner _scanner;          // Lexical analysis.
-    Annotator _annotator;      // Error reporting.
-    Auditor _auditor;          // Scope analysis.
-    Assembler _assembler;      // Code generation.
+    private Stack<int> _procedureNest; // Current scope of nested procedures.
+    private Scanner _scanner;          // Lexical analysis.
+    private Annotator _annotator;      // Error reporting.
+    private Auditor _auditor;          // Scope analysis.
+    private Assembler _assembler;      // Code generation.
 
     /// <summary>
     /// Category of the operation for object access / expression.
     /// </summary>
-    enum OperationCategory
+    private enum OperationCategory
     {
         None,
         Read,
@@ -104,7 +104,7 @@ public class Parser
         if (proceed)
         {
             Program(stopSymbols);
-            if (!(IsCurrentSymbol(Symbol.EndOfText)))
+            if (!IsCurrentSymbol(Symbol.EndOfText))
             {
                 ReportSyntaxErrorAndRecover(stopSymbols);
             }
@@ -126,12 +126,12 @@ public class Parser
     /// <summary>
     /// Gets the current argument.
     /// </summary>
-    int Argument => (_scanner.Argument);
+    private int Argument => _scanner.Argument;
 
     /// <summary>
     /// Gets the current symbol.
     /// </summary>
-    Symbol CurrentSymbol => (_scanner.CurrentSymbol);
+    private Symbol CurrentSymbol => _scanner.CurrentSymbol;
 
     /// <summary>
     /// Gets a value indicating if the given symbol matches the current symbol.
@@ -140,9 +140,9 @@ public class Parser
     /// <returns>
     /// A value indicating if the given symbol matches the current symbol.
     /// </returns>
-    bool IsCurrentSymbol(Symbol symbol)
+    private bool IsCurrentSymbol(Symbol symbol)
     {
-        return (CurrentSymbol == symbol);
+        return CurrentSymbol == symbol;
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ public class Parser
     /// </summary>
     /// <param name="expectedSymbol">The expected symbol.</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void Expect(Symbol expectedSymbol, Set stopSymbols)
+    private void Expect(Symbol expectedSymbol, Set stopSymbols)
     {
         if (IsCurrentSymbol(expectedSymbol))
         {
@@ -169,7 +169,7 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery</param>
     /// <returns>The argument of the name.</returns>
-    int ExpectName(Set stopSymbols)
+    private int ExpectName(Set stopSymbols)
     {
         int name;
         if (CurrentSymbol == Symbol.Name)
@@ -194,7 +194,7 @@ public class Parser
     /// <param name="errorCategory">Error category.</param>
     /// <param name="errorCode">Error code.</param>
     /// <param name="errorMessage">Error message.</param>
-    void PrintCompilationError(string errorCategory,
+    private void PrintCompilationError(string errorCategory,
                                int errorCode,
                                string errorMessage)
     {
@@ -212,13 +212,13 @@ public class Parser
     /// Reports syntax error and performs error recovery.
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ReportSyntaxErrorAndRecover(Set stopSymbols)
+    private void ReportSyntaxErrorAndRecover(Set stopSymbols)
     {
         _annotator.SyntaxError();
         if (_scanner.IsLineCorrect)
         {
             bool proceed = true;
-            while ((!(stopSymbols.Contains(_scanner.CurrentSymbol))) &&
+            while ((!stopSymbols.Contains(_scanner.CurrentSymbol)) &&
                    proceed)
             {
                 proceed = _scanner.NextSymbol();
@@ -230,9 +230,9 @@ public class Parser
     /// Performs syntax check.
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void SyntaxCheck(Set stopSymbols)
+    private void SyntaxCheck(Set stopSymbols)
     {
-        if (!(stopSymbols.Contains(_scanner.CurrentSymbol)))
+        if (!stopSymbols.Contains(_scanner.CurrentSymbol))
         {
             ReportSyntaxErrorAndRecover(stopSymbols);
         }
@@ -244,7 +244,7 @@ public class Parser
     /// <param name="symbol">
     /// Symbol representing the arithmetical/logical operation.
     /// </param>
-    void Operation(Symbol symbol)
+    private void Operation(Symbol symbol)
     {
         switch (symbol)
         {
@@ -345,7 +345,7 @@ public class Parser
     /// Program = Block
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void Program(Set stopSymbols)
+    private void Program(Set stopSymbols)
     {
         // Assemble code for Program.
         int objectsLengthLabel = _assembler.CurrentAddress + 1;
@@ -373,7 +373,7 @@ public class Parser
     /// </summary>
     /// <param name="newBlock">Should the auditor process a new block?</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void Block(bool newBlock, Set stopSymbols)
+    private void Block(bool newBlock, Set stopSymbols)
     {
         // Label for total objects length in this block.
         int objectsLengthLabel = _assembler.CurrentAddress + 1;
@@ -443,7 +443,7 @@ public class Parser
     ///                    VariableDefinition ";"   } 
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void DefinitionPart(Set stopSymbols)
+    private void DefinitionPart(Set stopSymbols)
     {
         // Define definition symbols.
         Set definitionSymbols = new Set(Symbol.Constant,
@@ -475,7 +475,7 @@ public class Parser
     /// StatementPart = { IfStatement | WhileStatement | Statement ";" }
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void StatementPart(Set stopSymbols)
+    private void StatementPart(Set stopSymbols)
     {
         // Define statement symbols.
         Set statementSymbols = new Set(Symbol.Name,
@@ -521,7 +521,7 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     /// <returns>A value indicating whether to expect a semicolon.</returns>
-    bool Definition(Set stopSymbols)
+    private bool Definition(Set stopSymbols)
     {
         bool expectSemicolon = true;
 
@@ -564,7 +564,7 @@ public class Parser
     /// NOTE: "-" should be followed by an integer constant.
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ConstantDefinition(Set stopSymbols)
+    private void ConstantDefinition(Set stopSymbols)
     {
         // Define stop symbols.
         Set minusStopSymbols = new Set(Symbol.Numeral,
@@ -637,7 +637,7 @@ public class Parser
     /// </summary>
     /// <param name="metadata">Metadata of the object.</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void Constant(ref Metadata metadata, Set stopSymbols)
+    private void Constant(ref Metadata metadata, Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -703,7 +703,7 @@ public class Parser
     ///                      TypeSymbol ArrayDeclaration
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void VariableDefinition(Set stopSymbols)
+    private void VariableDefinition(Set stopSymbols)
     {
         // Define stop symbols.
         Set typeSymbolstopSymbols = new Set(Symbol.Name,
@@ -731,7 +731,7 @@ public class Parser
     ///                         "("  [ ParameterDefinition ] ")" Block
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ProcedureDefinition(Set stopSymbols)
+    private void ProcedureDefinition(Set stopSymbols)
     {
         // Define stop symbols.
         Set rightParanthesisStopSymbols = new Set(Symbol.Begin);
@@ -906,7 +906,7 @@ public class Parser
     /// </summary>
     /// <param name="parameterRecordList">List of parameter records.</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ParameterDefinition(ref List<ParameterRecord> parameterRecordList,
+    private void ParameterDefinition(ref List<ParameterRecord> parameterRecordList,
                              Set stopSymbols)
     {
         ParameterRecord parameterRecord = new ParameterRecord();
@@ -1031,7 +1031,7 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     /// <returns>Returns the Type.</returns>
-    Type TypeSymbol(Set stopSymbols)
+    private Type TypeSymbol(Set stopSymbols)
     {
         Type type = Type.Universal;
 
@@ -1074,7 +1074,7 @@ public class Parser
     /// </summary>
     /// <param name="type">Type of the array.</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ArrayDeclaration(Type type, Set stopSymbols)
+    private void ArrayDeclaration(Type type, Set stopSymbols)
     {
         // Define stop symbols.
         Set rightBracketStopSymbols = new Set(Symbol.Name);
@@ -1133,7 +1133,7 @@ public class Parser
     /// </summary>
     /// <param name="metadata">Metadata of the object(s).</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void VariableList(Metadata metadata, Set stopSymbols)
+    private void VariableList(Metadata metadata, Set stopSymbols)
     {
         // Define stop symbols.
         Set variableNameStopSymbols = new Set(Symbol.Comma);
@@ -1172,7 +1172,7 @@ public class Parser
     /// <param name="stopSymbols">
     /// Stop symbols for error recovery.
     /// </param>
-    void ObjectAccessList(OperationCategory operation, Set stopSymbols)
+    private void ObjectAccessList(OperationCategory operation, Set stopSymbols)
     {
         // Define stop symbols.
         Set objectAccessStopSymbols = new Set(Symbol.Comma);
@@ -1315,7 +1315,7 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     /// <returns>Returns the metadata of the accessed object.</returns>
-    Metadata ObjectAccess(Set stopSymbols)
+    private Metadata ObjectAccess(Set stopSymbols)
     {
         // Define stop symbols.
         Set objectNameStopSymbols = new Set(Symbol.LeftBracket);
@@ -1351,7 +1351,7 @@ public class Parser
         }
         else if (objectRecord.MetaData.Kind == Kind.Array)
         {
-            if (!(IsCurrentSymbol(Symbol.LeftBracket)))
+            if (!IsCurrentSymbol(Symbol.LeftBracket))
             {
                 _annotator.KindError(
                               Kind.Array,
@@ -1391,7 +1391,7 @@ public class Parser
     /// IndexedSelector = "[" Expression "]" 
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void IndexedSelector(Set stopSymbols)
+    private void IndexedSelector(Set stopSymbols)
     {
         // Define stop symbols.
         Set leftBracketStopSymbols = new Set(Symbol.Minus,
@@ -1423,7 +1423,7 @@ public class Parser
     /// BooleanSymbol = "false" | "true" 
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void BooleanSymbol(Set stopSymbols)
+    private void BooleanSymbol(Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -1461,7 +1461,7 @@ public class Parser
     ///             ParallelStatement
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void Statement(Set stopSymbols)
+    private void Statement(Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -1547,7 +1547,7 @@ public class Parser
     /// ReadStatement = "read" ObjectAccessList
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ReadStatement(Set stopSymbols)
+    private void ReadStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set readStopSymbols = new Set(Symbol.Name);
@@ -1572,7 +1572,7 @@ public class Parser
     /// WriteStatement = "write" ExpressionList 
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void WriteStatement(Set stopSymbols)
+    private void WriteStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set writeStopSymbols = new Set(Symbol.Minus,
@@ -1603,7 +1603,7 @@ public class Parser
     /// OpenStatement = "open" ObjectAccessList
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void OpenStatement(Set stopSymbols)
+    private void OpenStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set openStopSymbols = new Set(Symbol.Name);
@@ -1619,7 +1619,7 @@ public class Parser
     /// RandomizeStatement = "random" ObjectAccessList
     /// </summary>
     /// <param name="stopSymbols"></param>
-    void RandomizeStatement(Set stopSymbols)
+    private void RandomizeStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set randomizeStopSymbols = new Set(Symbol.Name);
@@ -1635,7 +1635,7 @@ public class Parser
     /// SendStatement = "send" Expression "->" Expression
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void SendStatement(Set stopSymbols)
+    private void SendStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set throughStopSymbols = new Set(Symbol.Minus,
@@ -1695,7 +1695,7 @@ public class Parser
     /// ReceiveStatement = "receive" ObjectAccess "->" Expression
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ReceiveStatement(Set stopSymbols)
+    private void ReceiveStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set throughStopSymbols = new Set(Symbol.Minus,
@@ -1757,7 +1757,7 @@ public class Parser
     /// ParallelStatement = "parallel" ProcedureInvocation
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ParallelStatement(Set stopSymbols)
+    private void ParallelStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set parallelStopSymbols = new Set(Symbol.Name);
@@ -1804,7 +1804,7 @@ public class Parser
             }
 
             // Has no channel parameter?
-            if (!(hasChannelParameter))
+            if (!hasChannelParameter)
             {
                 _annotator.KindError(
                           Kind.Procedure,
@@ -1854,7 +1854,7 @@ public class Parser
     ///                        Expression [, Expression]
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void AssignmentStatement(Set stopSymbols)
+    private void AssignmentStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set expressionStopSymbols = new Set(Symbol.Comma);
@@ -1973,7 +1973,7 @@ public class Parser
     /// NOTE: 'Expression' in the above rule has to be of type boolean.
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void IfStatement(Set stopSymbols)
+    private void IfStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set blockStopSymbols = new Set(Symbol.Else);
@@ -2063,7 +2063,7 @@ public class Parser
     /// NOTE: 'Expression' in the above rule has to be of type boolean.
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void WhileStatement(Set stopSymbols)
+    private void WhileStatement(Set stopSymbols)
     {
         // Define stop symbols.
         Set rightParanthesisStopSymbols = new Set(Symbol.Begin);
@@ -2127,7 +2127,7 @@ public class Parser
     /// AddingOperator = "+" | "-"
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void AddingOperator(Set stopSymbols)
+    private void AddingOperator(Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -2155,7 +2155,7 @@ public class Parser
     /// RelationalOperator = "&lt;" | "&lt;=" | "==" | "!=" | "&gt;" | "&gt;=" 
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void RelationalOperator(Set stopSymbols)
+    private void RelationalOperator(Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -2207,7 +2207,7 @@ public class Parser
     /// PrimaryOperator = "&amp;" | "|"
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void PrimaryOperator(Set stopSymbols)
+    private void PrimaryOperator(Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -2235,7 +2235,7 @@ public class Parser
     /// MultiplyingOperator = "*" | "/" | "%" | "^" 
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void MultiplyingOperator(Set stopSymbols)
+    private void MultiplyingOperator(Set stopSymbols)
     {
         switch (CurrentSymbol)
         {
@@ -2284,7 +2284,7 @@ public class Parser
     /// <returns>
     /// Return type of the method.
     /// </returns>
-    Type ProcedureInvocation(bool isParallel, Set stopSymbols)
+    private Type ProcedureInvocation(bool isParallel, Set stopSymbols)
     {
         // Define stop symbols.
         Set commaStopSymbols = new Set(Symbol.Minus,
@@ -2317,7 +2317,7 @@ public class Parser
             int procedureName = _procedureNest.Peek();
             ObjectRecord procedureRecord = new ObjectRecord();
             _auditor.Find(procedureName, ref procedureRecord);
-            if (!(procedureRecord.ProcedureRecord.CallsParallelUnfriendly))
+            if (!procedureRecord.ProcedureRecord.CallsParallelUnfriendly)
             {
                 procedureRecord.ProcedureRecord.CallsParallelUnfriendly =
                   ((objectRecord.ProcedureRecord.HighestScopeUsed !=
@@ -2337,7 +2337,7 @@ public class Parser
                                                     referenceStopSymbols,
                                                     stopSymbols));
 
-        if (!(IsCurrentSymbol(Symbol.RightParanthesis)))
+        if (!IsCurrentSymbol(Symbol.RightParanthesis))
         {
             ParameterRecord argumentRecord = new ParameterRecord();
 
@@ -2475,7 +2475,7 @@ public class Parser
                           _auditor.BlockLevel - objectRecord.MetaData.Level,
                           objectRecord.MetaData.ProcedureLabel);
 
-        return (objectRecord.MetaData.Type);
+        return objectRecord.MetaData.Type;
     }
 
     /// <summary>
@@ -2483,7 +2483,7 @@ public class Parser
     /// </summary>
     /// <param name="operation">Category of operation.</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    void ExpressionList(OperationCategory operation, Set stopSymbols)
+    private void ExpressionList(OperationCategory operation, Set stopSymbols)
     {
         // Define stop symbols.
         Set expressionStopSymbols = new Set(Symbol.Comma);
@@ -2554,7 +2554,7 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     /// <returns>The type that the expression would evaluate to.</returns>
-    Type Expression(Set stopSymbols)
+    private Type Expression(Set stopSymbols)
     {
         // Define primary operator symbols.
         Set primaryOperatorSymbols = new Set(Symbol.And, Symbol.Or);
@@ -2624,7 +2624,7 @@ public class Parser
     /// <returns>
     /// The type that the primary expression would evaluate to.
     /// </returns>
-    Type PrimaryExpression(Set stopSymbols)
+    private Type PrimaryExpression(Set stopSymbols)
     {
         // Define relational operator symbols.
         Set relationalOperatorSymbols = new Set(Symbol.Less,
@@ -2728,7 +2728,7 @@ public class Parser
     /// <returns>
     /// The type that the simple expression would evaluate to.
     /// </returns>
-    Type SimpleExpression(Set stopSymbols)
+    private Type SimpleExpression(Set stopSymbols)
     {
         // Define adding operator symbols.
         Set addingOperatorSymbols = new Set(Symbol.Plus, Symbol.Minus);
@@ -2827,7 +2827,7 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     /// <returns>The type that the Term would evaluate to.</returns>
-    Type Term(Set stopSymbols)
+    private Type Term(Set stopSymbols)
     {
         // Define multiplying operator symbols.
         Set multiplyingOperatorSymbols = new Set(Symbol.Multiply,
@@ -2901,10 +2901,9 @@ public class Parser
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     /// <returns>The type that the Factor evaluates to.</returns>
-    Type Factor(Set stopSymbols)
+    private Type Factor(Set stopSymbols)
     {
-        Type type = Type.Universal;
-
+        Type type;
         switch (CurrentSymbol)
         {
             case Symbol.Numeral:

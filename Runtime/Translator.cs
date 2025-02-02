@@ -24,15 +24,15 @@ namespace Runtime;
 /// in parallel if required. Derives from the abstract class for
 /// parallel nodes - "Node".
 /// </summary>
-class Translator : Node
+internal class Translator : Node
 {
-    int _programRegister;      // Points to the current instruction.  
-    int _baseRegister;         // Points to the base of the current context.
-    int _stackRegister;        // Points to the top of the stack.
-    int[] _stack;              // Stack.
-    bool _running;             // Running mode?
-    bool _mainProcedure;       // Main procedure for the node?
-    Interpreter _interpreter;  // The interpreter instance.
+    private int _programRegister;      // Points to the current instruction.  
+    private int _baseRegister;         // Points to the base of the current context.
+    private int _stackRegister;        // Points to the top of the stack.
+    private readonly int[] _stack;     // Stack.
+    private bool _running;             // Running mode?
+    private bool _mainProcedure;       // Main procedure for the node?
+    private readonly Interpreter _interpreter;  // The interpreter instance.
 
     /// <summary>
     /// Creates an instance of Translator, which provides methods to interpret
@@ -89,19 +89,19 @@ class Translator : Node
     /// <summary>
     /// Interprets the intermediate code.
     /// </summary>
-    void Translate()
+    private void Translate()
     {
         _running = true;
 
         // Run the program.
-        while ((_running) && (_interpreter.NoGlobalErrors))
+        while (_running && _interpreter.NoGlobalErrors)
         {
             if (_programRegister >= (Interpreter.Max - 2))
             {
                 throw new Exception("Stack overflow.");
             }
 
-            Opcode opcode = (Opcode)(_interpreter.Store[_programRegister]);
+            Opcode opcode = (Opcode)_interpreter.Store[_programRegister];
             switch (opcode)
             {
                 case Opcode.Program:
@@ -130,23 +130,20 @@ class Translator : Node
 
                 case Opcode.ProcedureBlock:
                     {
-                        ProcedureBlock(
-                                        _interpreter.Store[_programRegister + 1]);
+                        ProcedureBlock(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
                 case Opcode.ProcedureInvocation:
                     {
-                        ProcedureInvocation(
-                                        _interpreter.Store[_programRegister + 1],
-                                        _interpreter.Store[_programRegister + 2]);
+                        ProcedureInvocation(_interpreter.Store[_programRegister + 1],
+                                            _interpreter.Store[_programRegister + 2]);
                         break;
                     }
 
                 case Opcode.EndProcedureBlock:
                     {
-                        EndProcedureBlock(
-                                        _interpreter.Store[_programRegister + 1]);
+                        EndProcedureBlock(_interpreter.Store[_programRegister + 1]);
                         break;
                     }
 
@@ -159,15 +156,14 @@ class Translator : Node
                 case Opcode.Variable:
                     {
                         Variable(_interpreter.Store[_programRegister + 1],
-                                      _interpreter.Store[_programRegister + 2]);
+                                 _interpreter.Store[_programRegister + 2]);
                         break;
                     }
 
                 case Opcode.ReferenceParameter:
                     {
-                        ReferenceParameter(
-                                      _interpreter.Store[_programRegister + 1],
-                                      _interpreter.Store[_programRegister + 2]);
+                        ReferenceParameter(_interpreter.Store[_programRegister + 1],
+                                           _interpreter.Store[_programRegister + 2]);
                         break;
                     }
 
@@ -363,9 +359,9 @@ class Translator : Node
     /// Allocates the specified number of locations for the stack. 
     /// </summary>
     /// <param name="words">Number of locations to allocate.</param>
-    void Allocate(int words)
+    private void Allocate(int words)
     {
-        _stackRegister = _stackRegister + words;
+        _stackRegister += words;
         if (_stackRegister >= Interpreter.Max)
         {
             throw new Exception("Stack overflow.");
@@ -377,7 +373,7 @@ class Translator : Node
     /// </summary>
     /// <param name="level">Relative level of the variable.</param>
     /// <param name="displacement">Displacement of the variable.</param>
-    void Variable(int level, int displacement)
+    private void Variable(int level, int displacement)
     {
         Allocate(1);
         int x = _baseRegister;
@@ -388,7 +384,7 @@ class Translator : Node
         }
 
         _stack[_stackRegister] = x + displacement;
-        _programRegister = _programRegister + 3;
+        _programRegister += 3;
     }
 
     /// <summary>
@@ -396,7 +392,7 @@ class Translator : Node
     /// </summary>
     /// <param name="level">Relative level of the parameter.</param>
     /// <param name="displacement">Displacement of the parameter.</param>
-    void ReferenceParameter(int level, int displacement)
+    private void ReferenceParameter(int level, int displacement)
     {
         Allocate(1);
         int x = _baseRegister;
@@ -407,270 +403,250 @@ class Translator : Node
         }
 
         _stack[_stackRegister] = _stack[x + displacement];
-        _programRegister = _programRegister + 3;
+        _programRegister += 3;
     }
 
     /// <summary>
     /// Processes index.
     /// </summary>
     /// <param name="bound">Upper bound of the array.</param>
-    void Index(int bound)
+    private void Index(int bound)
     {
         int i = _stack[_stackRegister];
-        --(_stackRegister);
+        --_stackRegister;
         if ((i < 1) || (i > bound))
         {
             throw new Exception("Array index is out of bounds.");
         }
         else
         {
-            _stack[_stackRegister] =
-              _stack[_stackRegister] + i - 1;
+            _stack[_stackRegister] = _stack[_stackRegister] + i - 1;
         }
 
-        _programRegister = _programRegister + 2;
+        _programRegister += 2;
     }
 
     /// <summary>
     /// Processes a constant.
     /// </summary>
     /// <param name="value">Value of the constant.</param>
-    void Constant(int value)
+    private void Constant(int value)
     {
         Allocate(1);
         _stack[_stackRegister] = value;
-        _programRegister = _programRegister + 2;
+        _programRegister += 2;
     }
 
     /// <summary>
     /// Processes the value of an object.
     /// </summary>
-    void Value()
+    private void Value()
     {
-        _stack[_stackRegister] =
-          _stack[_stack[_stackRegister]];
-        ++(_programRegister);
+        _stack[_stackRegister] = _stack[_stack[_stackRegister]];
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Not (!) operation.
     /// </summary>
-    void Not()
+    private void Not()
     {
         _stack[_stackRegister] = 1 - _stack[_stackRegister];
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Multiplication (*) operation.
     /// </summary>
-    void Multiply()
+    private void Multiply()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stackRegister] =
-              _stack[_stackRegister] * _stack[_stackRegister + 1];
+            _stack[_stackRegister] = _stack[_stackRegister] * _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Division (/) operation.
     /// </summary>
-    void Divide()
+    private void Divide()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stackRegister] =
-              _stack[_stackRegister] / _stack[_stackRegister + 1];
+            _stack[_stackRegister] = _stack[_stackRegister] / _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Modulo (%) operation.
     /// </summary>
-    void Modulo()
+    private void Modulo()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stackRegister] =
-              _stack[_stackRegister] % _stack[_stackRegister + 1];
+            _stack[_stackRegister] = _stack[_stackRegister] % _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Power operation.
     /// </summary>
-    void Power()
+    private void Power()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stackRegister] = Convert.ToInt32(Math.Pow(
-                                              _stack[_stackRegister],
-                                              _stack[_stackRegister + 1]));
+            _stack[_stackRegister] = Convert.ToInt32(Math.Pow(_stack[_stackRegister],
+                                                              _stack[_stackRegister + 1]));
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Minus (-) operation.
     /// </summary>
-    void Minus()
+    private void Minus()
     {
         checked
         {
             _stack[_stackRegister] = -1 * _stack[_stackRegister];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Addition (+) operation.
     /// </summary>
-    void Add()
+    private void Add()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stackRegister] =
-              _stack[_stackRegister] + _stack[_stackRegister + 1];
+            _stack[_stackRegister] = _stack[_stackRegister] + _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Subtraction (-) operation.
     /// </summary>
-    void Subtract()
+    private void Subtract()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stackRegister] =
-              _stack[_stackRegister] - _stack[_stackRegister + 1];
+            _stack[_stackRegister] = _stack[_stackRegister] - _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Less (&lt;) operation.
     /// </summary>
-    void Less()
+    private void Less()
     {
-        --(_stackRegister);
-        _stack[_stackRegister] =
-          (_stack[_stackRegister] < _stack[_stackRegister + 1])
-                  ? 1 : 0;
-        ++(_programRegister);
+        --_stackRegister;
+        _stack[_stackRegister] = (_stack[_stackRegister] < _stack[_stackRegister + 1]) ? 1 : 0;
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Less or Equal (&lt;=) operation.
     /// </summary>
-    void LessOrEqual()
+    private void LessOrEqual()
     {
-        --(_stackRegister);
-        _stack[_stackRegister] =
-          (_stack[_stackRegister] <= _stack[_stackRegister + 1])
-                  ? 1 : 0;
-        ++(_programRegister);
+        --_stackRegister;
+        _stack[_stackRegister] = (_stack[_stackRegister] <= _stack[_stackRegister + 1]) ? 1 : 0;
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Equal (==) operation.
     /// </summary>
-    void Equal()
+    private void Equal()
     {
-        --(_stackRegister);
-        _stack[_stackRegister] =
-          (_stack[_stackRegister] == _stack[_stackRegister + 1])
-                  ? 1 : 0;
-        ++(_programRegister);
+        --_stackRegister;
+        _stack[_stackRegister] = (_stack[_stackRegister] == _stack[_stackRegister + 1]) ? 1 : 0;
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Not-equal (!=) operation.
     /// </summary>
-    void NotEqual()
+    private void NotEqual()
     {
-        --(_stackRegister);
-        _stack[_stackRegister] =
-          (_stack[_stackRegister] != _stack[_stackRegister + 1])
-                  ? 1 : 0;
-        ++(_programRegister);
+        --_stackRegister;
+        _stack[_stackRegister] = (_stack[_stackRegister] != _stack[_stackRegister + 1]) ? 1 : 0;
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Greater (>) operation.
     /// </summary>
-    void Greater()
+    private void Greater()
     {
-        --(_stackRegister);
-        _stack[_stackRegister] =
-          (_stack[_stackRegister] > _stack[_stackRegister + 1])
-                  ? 1 : 0;
-        ++(_programRegister);
+        --_stackRegister;
+        _stack[_stackRegister] = (_stack[_stackRegister] > _stack[_stackRegister + 1]) ? 1 : 0;
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Greater or Equal (>=) operation.
     /// </summary>
-    void GreaterOrEqual()
+    private void GreaterOrEqual()
     {
-        --(_stackRegister);
-        _stack[_stackRegister] =
-          (_stack[_stackRegister] >= _stack[_stackRegister + 1])
-                  ? 1 : 0;
-        ++(_programRegister);
+        --_stackRegister;
+        _stack[_stackRegister] = (_stack[_stackRegister] >= _stack[_stackRegister + 1]) ? 1 : 0;
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes And (&amp;) operation.
     /// </summary>
-    void And()
+    private void And()
     {
-        --(_stackRegister);
+        --_stackRegister;
         if (_stack[_stackRegister] == 1)
         {
             _stack[_stackRegister] = _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Processes Or (|) operation.
     /// </summary>
-    void Or()
+    private void Or()
     {
-        --(_stackRegister);
+        --_stackRegister;
         if (_stack[_stackRegister] == 0)
         {
             _stack[_stackRegister] = _stack[_stackRegister + 1];
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Reads a boolean value.
     /// </summary>
-    void ReadBoolean()
+    private void ReadBoolean()
     {
-        --(_stackRegister);
+        --_stackRegister;
         string input = _interpreter.Input.ReadLine();
         if (input.ToLower().Equals("true"))
         {
@@ -685,53 +661,51 @@ class Translator : Node
             throw new Exception("Boolean input was not in the correct format.");
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Reads an integer value.
     /// </summary>
-    void ReadInteger()
+    private void ReadInteger()
     {
-        --(_stackRegister);
+        --_stackRegister;
         checked
         {
-            _stack[_stack[_stackRegister + 1]] =
-                                              Convert.ToInt32(_interpreter.Input.ReadLine());
+            _stack[_stack[_stackRegister + 1]] = Convert.ToInt32(_interpreter.Input.ReadLine());
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Writes a boolean value.
     /// </summary>
-    void WriteBoolean()
+    private void WriteBoolean()
     {
-        --(_stackRegister);
-        string output = (_stack[_stackRegister + 1] == 0)
-                        ? "false" : "true";
+        --_stackRegister;
+        string output = (_stack[_stackRegister + 1] == 0) ? "false" : "true";
         _interpreter.Output.WriteLine(output);
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Writes an integer value.
     /// </summary>
-    void WriteInteger()
+    private void WriteInteger()
     {
-        --(_stackRegister);
+        --_stackRegister;
         _interpreter.Output.WriteLine(_stack[_stackRegister + 1]);
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Assigns a value to an object. 
     /// </summary>
     /// <param name="total">Total number of assignments to make.</param>
-    void Assign(int total)
+    private void Assign(int total)
     {
-        _stackRegister = _stackRegister - (2 * total);
+        _stackRegister -= 2 * total;
         int x = _stackRegister;
         while (x < (_stackRegister + total))
         {
@@ -739,7 +713,7 @@ class Translator : Node
             _stack[_stack[x]] = _stack[x + total];
         }
 
-        _programRegister = _programRegister + 2;
+        _programRegister += 2;
     }
 
     /// <summary>
@@ -750,25 +724,25 @@ class Translator : Node
     /// The address to branch to in case the conditional expression 
     /// evaluates to false.
     /// </param>
-    void Do(int address)
+    private void Do(int address)
     {
         if (_stack[_stackRegister] != 0)
         {
-            _programRegister = _programRegister + 2;
+            _programRegister += 2;
         }
         else
         {
             _programRegister = address;
         }
 
-        --(_stackRegister);
+        --_stackRegister;
     }
 
     /// <summary>
     /// Unconditionally branches to the specified address.
     /// </summary>
     /// <param name="address">The address to branch to.</param>
-    void Goto(int address)
+    private void Goto(int address)
     {
         _programRegister = address;
     }
@@ -776,37 +750,35 @@ class Translator : Node
     /// <summary>
     /// Opens up a channel for use.
     /// </summary>
-    void Open()
+    private void Open()
     {
-        --(_stackRegister);
+        --_stackRegister;
         lock (_interpreter.Channels)
         {
-            _stack[_stack[_stackRegister + 1]] =
-                                                _interpreter.Channels.Count;
+            _stack[_stack[_stackRegister + 1]] = _interpreter.Channels.Count;
             _interpreter.Channels.Add(new Channel<int>());
         }
 
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Assigns a random value to an integer variable.
     /// </summary>
-    void Randomize()
+    private void Randomize()
     {
-        --(_stackRegister);
-        Random random = new Random(Environment.TickCount -
-                                   Thread.CurrentThread.ManagedThreadId);
+        --_stackRegister;
+        Random random = new Random();
         _stack[_stack[_stackRegister + 1]] = random.Next();
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
     /// Sends an integer value through a channel.
     /// </summary>
-    void Send()
+    private void Send()
     {
-        --(_stackRegister);
+        --_stackRegister;
         int key = _stack[_stackRegister + 1];
         bool error = false;
         lock (_interpreter.Channels)
@@ -824,16 +796,16 @@ class Translator : Node
         else
         {
             _interpreter.Channels[key].Send(_stack[_stackRegister]);
-            ++(_programRegister);
+            ++_programRegister;
         }
     }
 
     /// <summary>
     /// Receives an integer value through a channel.
     /// </summary>
-    void Receive()
+    private void Receive()
     {
-        --(_stackRegister);
+        --_stackRegister;
         int key = _stack[_stackRegister + 1];
         bool error = false;
         lock (_interpreter.Channels)
@@ -850,16 +822,15 @@ class Translator : Node
         }
         else
         {
-            _stack[_stack[_stackRegister]] =
-                                      _interpreter.Channels[key].Receive();
-            ++(_programRegister);
+            _stack[_stack[_stackRegister]] = _interpreter.Channels[key].Receive();
+            ++_programRegister;
         }
     }
 
     /// <summary>
     /// Spawns a new node that runs in parallel.
     /// </summary>
-    void Parallel()
+    private void Parallel()
     {
         int[] currentStack = new int[_stackRegister + 1];
         Array.Copy(_stack, currentStack, _stackRegister + 1);
@@ -872,7 +843,7 @@ class Translator : Node
 
         // Skip past the parallel statement, and the following 
         // procedure invocation as well.
-        _programRegister = _programRegister + 4;
+        _programRegister += 4;
     }
 
     /// <summary>
@@ -881,23 +852,23 @@ class Translator : Node
     /// <param name="objectsLength">
     /// Total length of the objects in this block.
     /// </param>
-    void Block(int objectsLength)
+    private void Block(int objectsLength)
     {
         Allocate(1);
         _stack[_stackRegister] = _baseRegister;
         _baseRegister = _stackRegister;
-        _programRegister = _programRegister + 2;
+        _programRegister += 2;
         Allocate(objectsLength + 2);
     }
 
     /// <summary>
     /// Processes end of a block.
     /// </summary>
-    void EndBlock()
+    private void EndBlock()
     {
         _stackRegister = _baseRegister - 1;
         _baseRegister = _stack[_baseRegister];
-        ++(_programRegister);
+        ++_programRegister;
     }
 
     /// <summary>
@@ -906,17 +877,17 @@ class Translator : Node
     /// <param name="objectsLength">
     /// Total length of the objects in this block.
     /// </param>
-    void ProcedureBlock(int objectsLength)
+    private void ProcedureBlock(int objectsLength)
     {
         Allocate(objectsLength);
-        _programRegister = _programRegister + 2;
+        _programRegister += 2;
     }
 
     /// <summary>
     /// Processes end of a procedure block.
     /// </summary>
     /// <param name="parametersLength">Total length of parameters.</param>
-    void EndProcedureBlock(int parametersLength)
+    private void EndProcedureBlock(int parametersLength)
     {
         _stackRegister = _baseRegister - parametersLength;
         if (_baseRegister < (Interpreter.Max - 3))
@@ -937,14 +908,14 @@ class Translator : Node
     /// <param name="startAddress">
     /// Start address of the procedure block.
     /// </param>
-    void ProcedureInvocation(int level, int startAddress)
+    private void ProcedureInvocation(int level, int startAddress)
     {
         Allocate(3);
         int x = _baseRegister;
         while (level > 0)
         {
             x = _stack[x];
-            level = level - 1;
+            level--;
         }
 
         _stack[_stackRegister - 2] = x;
@@ -969,7 +940,7 @@ class Translator : Node
     /// <param name="objectsLength">
     /// Total length of the objects in the block.
     /// </param>
-    void Program(int objectsLength)
+    private void Program(int objectsLength)
     {
         _baseRegister = 0;
         _stackRegister = _baseRegister;
@@ -980,7 +951,7 @@ class Translator : Node
     /// <summary>
     /// Processes end of program block.
     /// </summary>
-    void EndProgram()
+    private void EndProgram()
     {
         _running = false;
     }

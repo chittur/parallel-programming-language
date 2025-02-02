@@ -20,12 +20,12 @@ namespace Executive;
 /// <summary>
 /// The executive class.
 /// </summary>
-class Program
+internal class Program
 {
     /// <summary>
     /// Prints the help message.
     /// </summary>
-    static void PrintHelp()
+    private static void PrintHelp()
     {
         Console.WriteLine("{0}{1}",
                           "help".PadRight(35),
@@ -55,7 +55,7 @@ class Program
     /// <summary>
     /// Prints the error message for invalid commands.
     /// </summary>
-    static void PrintInvalidCommand()
+    private static void PrintInvalidCommand()
     {
         Console.WriteLine("The command line arguments provided are invalid.\n");
         Program.PrintHelp();
@@ -65,7 +65,7 @@ class Program
     /// Runs the intermediate code.
     /// </summary>
     /// <param name="filename">The intermediate code file.</param>
-    static void Run(string filename)
+    private static void Run(string filename)
     {
         Interpreter interpreter = new Interpreter(Console.In, Console.Out);
         interpreter.RunProgram(filename);
@@ -76,12 +76,12 @@ class Program
     /// </summary>
     /// <param name="filename">The source file.</param>
     /// <param name="run">Run the program?</param>
-    static void CompileAndOptionallyRun(string filename, bool run)
+    private static void CompileAndOptionallyRun(string filename, bool run)
     {
         using FileStream stream = new FileStream(filename,
                                                   FileMode.Open,
                                                   FileAccess.Read);
-        using (TextReader reader = new StreamReader(stream))
+        using (StreamReader reader = new StreamReader(stream))
         {
             Parser parser = new Parser();
             bool success = parser.Compile(reader, filename + ".sachin");
@@ -108,16 +108,16 @@ class Program
     /// The entry point for this program.
     /// </summary>
     /// <param name="args">Command line arguments.</param>
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         try
         {
             if (args.Length == 1)
             {
-                if ((args[0].Equals("/?")) ||
-                    (args[0].Equals("-?")) ||
-                    (args[0].Equals("?")) ||
-                    (args[0].ToLower().Equals("help")))
+                if (args[0].Equals("/?") ||
+                    args[0].Equals("-?") ||
+                    args[0].Equals("?") ||
+                    args[0].ToLower().Equals("help"))
                 {
                     Program.PrintHelp();
                 }

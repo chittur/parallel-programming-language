@@ -60,7 +60,7 @@ internal class WordRecord
         Symbol = Symbol.Name;
         Argument = WordRecord.VariableCount;
 
-        ++(WordRecord.VariableCount);
+        ++WordRecord.VariableCount;
     }
 
     /// <summary>

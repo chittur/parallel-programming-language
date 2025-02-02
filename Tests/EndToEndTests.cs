@@ -150,11 +150,12 @@ public class EndToEndTests
                 read i, b;
                 i = i ^ 2;
                 i = i + 1 - 1;
-                i = i * 1;
+                i = i * (3 % 2);
                 i = i / 1;
 
                 b = b & true;
                 b = b | false;
+                b = b & (3 < 4) & (3 > 2) & (3 == 3) & (3 != 4) & (3 <= 4) & (3 >= 2);
                 b = Invert(b);
 
                 write i, b;

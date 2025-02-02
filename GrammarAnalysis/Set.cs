@@ -20,7 +20,7 @@ namespace GrammarAnalysis;
 /// </summary>
 public class Set
 {
-    List<Symbol> _symbolList;
+    private readonly List<Symbol> _symbolList;
 
     /// <summary>
     /// Creates a new instance of Set, a set for holding a list of symbols.
@@ -75,6 +75,6 @@ public class Set
     /// </returns>
     public bool Contains(Symbol symbol)
     {
-        return (_symbolList.Contains(symbol));
+        return _symbolList.Contains(symbol);
     }
 }

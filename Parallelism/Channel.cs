@@ -11,6 +11,7 @@
  *               between parallel nodes.
  *****************************************************************************/
 
+using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -24,8 +25,8 @@ namespace Parallelism;
 /// </typeparam>
 public class Channel<T> where T : struct
 {
-    State _state;  // Current state of the channel.
-    T _content;    // Content of the channel.
+    private State _state;  // Current state of the channel.
+    private T _content;    // Content of the channel.
 
     /// <summary>
     /// Creates an instance of Channel, messaging channel between parallel nodes.
@@ -42,7 +43,7 @@ public class Channel<T> where T : struct
     /// <returns>The message.</returns>
     public T Receive()
     {
-        int threadId = Thread.CurrentThread.ManagedThreadId; // For logging only.
+        int threadId = Environment.CurrentManagedThreadId; // For logging only.
 
         Trace.WriteLine($"Channel.Receive on thread {threadId}: Getting ready to receive.");
         while (_state != State.Sent)
@@ -63,7 +64,7 @@ public class Channel<T> where T : struct
     /// <param name="value">The message.</param>
     public void Send(T value)
     {
-        int threadId = Thread.CurrentThread.ManagedThreadId; // For logging only.
+        int threadId = Environment.CurrentManagedThreadId; // For logging only.
 
         Trace.WriteLine($"Channel.Send on thread {threadId}: Getting ready to send.");
         while (_state != State.Idle)
@@ -90,7 +91,7 @@ public class Channel<T> where T : struct
     /// <summary>
     /// Waits till notified by another thread.
     /// </summary>
-    void Wait()
+    private void Wait()
     {
         lock (this)
         {
@@ -101,7 +102,7 @@ public class Channel<T> where T : struct
     /// <summary>
     /// Notifies all other waiting threads.
     /// </summary>
-    void NotifyAll()
+    private void NotifyAll()
     {
         lock (this)
         {

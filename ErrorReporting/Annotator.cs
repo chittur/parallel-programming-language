@@ -520,7 +520,7 @@ public class Annotator
     /// <param name="errorCategory">Category of the compilation error.</param>
     /// <param name="errorCode">Error code.</param>
     /// <param name="errorMessage">Error message.</param>
-    void PrintError(string errorCategory, int errorCode, string errorMessage)
+    private void PrintError(string errorCategory, int errorCode, string errorMessage)
     {
         PrintErrorReport?.Invoke(errorCategory, errorCode, errorMessage);
     }

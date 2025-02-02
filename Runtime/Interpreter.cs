@@ -98,7 +98,7 @@ public class Interpreter
     /// <param name="filename">
     /// Path of the file containing the intermediate code.
     /// </param>
-    void LoadProgram(string filename)
+    private void LoadProgram(string filename)
     {
         string[] lines = File.ReadAllLines(filename);
         if (lines.Length >= Max)

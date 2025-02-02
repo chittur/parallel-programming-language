@@ -25,7 +25,7 @@ public class ParallelismTests
     /// <summary>
     /// A sample 'Node'.
     /// </summary>
-    class SampleNode : Node
+    private class SampleNode : Node
     {
         /// <summary>
         /// Creates the sample node class.
@@ -57,7 +57,7 @@ public class ParallelismTests
         /// <summary>
         /// Channel to send and receive integers.
         /// </summary>
-        readonly Channel<int> _channel;
+        private readonly Channel<int> _channel;
     }
 
     /// <summary>

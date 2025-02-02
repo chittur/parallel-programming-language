@@ -24,9 +24,9 @@ namespace CodeGeneration;
 /// </summary>
 public class Assembler
 {
-    const int Max = 10000;             // Maximum Size of the assembly table.
-    readonly List<int> _assemblyTable;  // The assembly table.
-    readonly Annotator _annotator;      // Annotator instance, for error reporting.
+    private const int Max = 10000;              // Maximum Size of the assembly table.
+    private readonly List<int> _assemblyTable;  // The assembly table.
+    private readonly Annotator _annotator;      // Annotator instance, for error reporting.
 
     /// <summary>
     /// Creates an instance of Assembler, which provides methods to
@@ -51,7 +51,7 @@ public class Assembler
         using FileStream stream = new FileStream(filename,
                                                   FileMode.Create,
                                                   FileAccess.Write);
-        using (TextWriter writer = new StreamWriter(stream))
+        using (StreamWriter writer = new StreamWriter(stream))
         {
             foreach (int code in _assemblyTable)
             {
@@ -449,7 +449,7 @@ public class Assembler
     /// </summary>
     /// <param name="opcode">The opcode to be emitted.</param>
     /// <param name="arguments">Values to be emitted.</param>
-    void Emit(Opcode opcode, params int[] arguments)
+    private void Emit(Opcode opcode, params int[] arguments)
     {
         EmitCode(Convert.ToInt32(opcode));
         foreach (int argument in arguments)
@@ -462,7 +462,7 @@ public class Assembler
     /// Emits the specified code.
     /// </summary>
     /// <param name="value">The code to be emitted.</param>
-    void EmitCode(int value)
+    private void EmitCode(int value)
     {
         if (CurrentAddress >= Assembler.Max)
         {
@@ -471,7 +471,7 @@ public class Assembler
         else
         {
             _assemblyTable.Add(value);
-            CurrentAddress = CurrentAddress + 1;
+            ++CurrentAddress;
         }
     }
 }
