@@ -11,6 +11,7 @@
  *               keywords.
  *****************************************************************************/
 
+using System.Diagnostics;
 using LanguageConstructs;
 
 namespace LexicalAnalysis;
@@ -73,21 +74,11 @@ internal class WordRecord
     /// </param>
     public WordRecord(string spelling, Symbol symbol)
     {
+        Debug.Assert(symbol != Symbol.Name);
         Spelling = spelling;
         Symbol = symbol;
-
-        if (symbol == Symbol.Name)
-        {
-            IsVariable = true;
-            Argument = WordRecord.VariableCount;
-
-            ++(WordRecord.VariableCount);
-        }
-        else
-        {
-            IsVariable = false;
-            Argument = -1;
-        }
+        IsVariable = false;
+        Argument = -1;
     }
 
     /// <summary>

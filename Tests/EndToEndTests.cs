@@ -119,12 +119,26 @@ public class EndToEndTests
             }
             ";
 
+        // Expected output of the program: Sum of sqaures of the digits of 13597.
+        const string Expected = "165\r\n";
+
+        // Validate that the program produces the expected output.
+        Validate(Code, Expected);
+    }
+
+    /// <summary>
+    /// Validates that the given code produces the expected output.
+    /// </summary>
+    /// <param name="code">The program being tested</param>
+    /// <param name="expected">The expected output</param>
+    private static void Validate(string code, string expected)
+    {
         // Intermediate code file.
         string intermediateFilename = new Random().Next().ToString() + ".sachin";
 
         // Feed the code to the parser.
         Parser parser = new Parser();
-        TextReader reader = new StringReader(Code);
+        TextReader reader = new StringReader(code);
         bool compiled = parser.Compile(reader, intermediateFilename);
 
         // Validate that the compilation succeeded.
@@ -141,8 +155,7 @@ public class EndToEndTests
                 string result = stringBuilder.ToString();
 
                 // Validate that the output of the program is as expected.
-                const string Expected = "165\r\n"; // Sum of sqaures of the digits of 13597.
-                Assert.AreEqual(result, Expected);
+                Assert.AreEqual(result, expected);
             }
 
             // Cleanup by deleting the intermediate code file.

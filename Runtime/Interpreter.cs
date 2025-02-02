@@ -24,12 +24,12 @@ namespace Runtime;
 /// </summary>
 public class Interpreter
 {
-    internal const int Max = 10002; // Available memory for the each node.
-    internal int[] _store;           // Memory.
-    internal int _endOfProgram;      // End address for the program code.
-    internal List<Channel<int>> _channelList; // List of channels.
-    internal bool _noGlobalErrors;   // No errors in any of the parallel nodes?
-    internal TextWriter _output;     // The output stream.
+    internal const int Max = 10002;             // Available memory for the each node.
+    internal int[] _store;                      // Memory.
+    internal int _endOfProgram;                 // End address for the program code.
+    internal List<Channel<int>> _channelList;   // List of channels.
+    internal bool _noGlobalErrors;              // No errors in any of the parallel nodes?
+    internal TextWriter _output;                // The output stream.
 
     /// <summary>
     /// Creates a new instance of Interpreter, which loads the intermediate

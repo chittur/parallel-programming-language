@@ -169,25 +169,6 @@ public enum KindErrorCategory
     /// statement(s), or uses non local variable(s), or both.
     /// </summary>
     ParallelProcedureCallsUnfriendly = 319,
-
-    /// <summary>
-    /// The previous procedure block employs parallel recursion, but uses
-    /// input or output statement(s).
-    /// </summary>
-    ParallelRecursionUsesIO = 320,
-
-    /// <summary>
-    /// The previous procedure block employs parallel recursion, but uses
-    /// non local variable(s).
-    /// </summary>
-    ParallelRecursionUsesNonLocals = 321,
-
-    /// <summary>
-    /// The previous procedure block employs parallel recursion, but invokes
-    /// another procedure that is not parallel friendly; i.e. it either uses
-    /// input / output statement(s), or uses non local variable(s), or both.
-    /// </summary>
-    ParallelRecursionCallsUnfriendly = 322
 }
 
 /// <summary>

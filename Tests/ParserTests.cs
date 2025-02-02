@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Compilation;
+using ErrorReporting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests;
@@ -48,13 +49,13 @@ public class ParserTests
         // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
-                100, // GenericSyntaxError
-                202, // AmbiguousName
-                301, // NonConstantInConstantDefinition
-                304, // NonPositiveIntegerIndexInArrayDeclaration
-                201, // UndefinedName
-                302, // AssignmentModifiesConstant
-                303, // ArrayVariableMissingIndexedSelector
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)ScopeErrorCategory.AmbiguousName,
+                (int)KindErrorCategory.NonConstantInConstantDefinition,
+                (int)KindErrorCategory.NonPositiveIntegerIndexInArrayDeclaration,
+                (int)ScopeErrorCategory.UndefinedName,
+                (int)KindErrorCategory.AssignmentModifiesConstant,
+                (int)KindErrorCategory.ArrayVariableMissingIndexedSelector,
             ];
 
         // Validate.
@@ -71,27 +72,36 @@ public class ParserTests
         const string Code = @"
             {
                 @ Test(reference integer i, boolean j) { }
+                @ Test2(integer i, reference boolean j) { }
                 constant max = 1;
+                constant signal = true;
                 integer i;
+                boolean b;
 
                 read Test;                  $ Error: ProcedureAccessedAsObject = 305
-                                            $        InvalidTypeInReadStatement = 410
+                                            $ Error: InvalidTypeInReadStatement = 410
                 Test(reference i);          $ Error: ArgumentCountMismatch = 306
                 Test(reference i, true, i); $ Error: ArgumentCountMismatch = 306
                 Test(3, true);              $ Error: ParameterKindMismatch = 307
                 Test(reference max, true);  $ Error: ConstantPassedAsReferenceParameter = 308
+                Test2(i, reference signal); $ Error: ConstantPassedAsReferenceParameter = 308
+                i = 3, 4 * 5;               $ Error: AssignmentCountMismatch = 309
+                b, i = true;                $ Error: AssignmentCountMismatch = 309
             }
             ";
 
         // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
-                305, // ProcedureAccessedAsObject
-                410, // InvalidTypeInReadStatement
-                306, // ArgumentCountMismatch
-                306, // ArgumentCountMismatch
-                307, // ParameterKindMismatch
-                308, // ConstantPassedAsReferenceParameter
+                (int)KindErrorCategory.ProcedureAccessedAsObject,
+                (int)TypeErrorCategory.InvalidTypeInReadStatement,
+                (int)KindErrorCategory.ArgumentCountMismatch,
+                (int)KindErrorCategory.ArgumentCountMismatch,
+                (int)KindErrorCategory.ParameterKindMismatch,
+                (int)KindErrorCategory.ConstantPassedAsReferenceParameter,
+                (int)KindErrorCategory.ConstantPassedAsReferenceParameter,
+                (int)KindErrorCategory.AssignmentCountMismatch,
+                (int)KindErrorCategory.AssignmentCountMismatch,
             ];
 
         // Validate.
@@ -108,16 +118,22 @@ public class ParserTests
         const string Code = @"
             {
                 constant max = 10;
+                integer i;
+                boolean b;
                 read max;               $ Error: ReadModifiesConstant = 310
+                read b, max;            $ Error: ReadModifiesConstant = 310
                 randomize max;          $ Error: RandomizeModifiesConstant = 311
+                randomize i, max;       $ Error: RandomizeModifiesConstant = 311
             }
             ";
 
         // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
-                310, // ReadModifiesConstant
-                311, // RandomizeModifiesConstant 
+                (int)KindErrorCategory.ReadModifiesConstant,
+                (int)KindErrorCategory.ReadModifiesConstant,
+                (int)KindErrorCategory.RandomizeModifiesConstant,
+                (int)KindErrorCategory.RandomizeModifiesConstant,
             ];
 
         // Validate.
@@ -170,14 +186,14 @@ public class ParserTests
         // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
-                314, // ParallelProcedureHasNonVoidReturn
-                315, // ParallelProcedureHasReferenceParameter
-                316, // ParallelProcedureHasNoChannelParameter
-                317, // ParallelProcedureUsesIO
-                318, // ParallelProcedureUsesNonLocals
-                319, // ParallelProcedureCallsUnfriendly
-                312, // ReceiveModifiesConstant
-                313, // NonProcedureInParallelStatement
+                (int)KindErrorCategory.ParallelProcedureHasNonVoidReturn,
+                (int)KindErrorCategory.ParallelProcedureHasReferenceParameter,
+                (int)KindErrorCategory.ParallelProcedureHasNoChannelParameter,
+                (int)KindErrorCategory.ParallelProcedureUsesIO,
+                (int)KindErrorCategory.ParallelProcedureUsesNonLocals,
+                (int)KindErrorCategory.ParallelProcedureCallsUnfriendly,
+                (int)KindErrorCategory.ReceiveModifiesConstant,
+                (int)KindErrorCategory.NonProcedureInParallelStatement,
             ];
 
         // Validate.
@@ -208,8 +224,11 @@ public class ParserTests
                 i = !i;             $ Error: NonBooleanToTheRightOfNotOperator = 406
                 Test(z);            $ Error: ParameterTypeMismatch = 408
                 write c;            $ Error: InvalidTypeInWriteStatement = 409
+                write 5, c;         $ Error: InvalidTypeInWriteStatement = 409
                 read c;             $ Error: InvalidTypeInReadStatement = 410
+                read i, c;          $ Error: InvalidTypeInReadStatement = 410
                 randomize b;        $ Error: NonIntegerInRandomizeStatement = 411
+                randomize i, b;     $ Error: NonIntegerInRandomizeStatement = 411
                 send b -> c;        $ Error: NonIntegerValueInSendStatement = 412
                 send 0 -> z;        $ Error: NonChannelInSendStatement = 413
                 receive b -> c;     $ Error: NonIntegerValueInReceiveStatement = 414
@@ -221,22 +240,25 @@ public class ParserTests
         // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
-                407,  // MinusPrecedingNonIntegerInConstantDefinition
-                401,  // NonIntegerIndexInArrayDeclaration
-                402,  // NonIntegerArrayIndex
-                403,  // TypeMismatchInAssignment
-                404,  // NonBooleanInIfCondition
-                405,  // NonBooleanInWhileCondition
-                406,  // NonBooleanToTheRightOfNotOperator
-                408,  // ParameterTypeMismatch
-                409,  // InvalidTypeInWriteStatement
-                410,  // InvalidTypeInReadStatement
-                411,  // NonIntegerInRandomizeStatement
-                412,  // NonIntegerValueInSendStatement
-                413,  // NonChannelInSendStatement
-                414,  // NonIntegerValueInReceiveStatement
-                415,  // NonChannelInReceiveStatement
-                416,  // NonChannelInOpenStatement
+                (int)TypeErrorCategory.MinusPrecedingNonIntegerInConstantDefinition,
+                (int)TypeErrorCategory.NonIntegerIndexInArrayDeclaration,
+                (int)TypeErrorCategory.NonIntegerArrayIndex,
+                (int)TypeErrorCategory.TypeMismatchInAssignment,
+                (int)TypeErrorCategory.NonBooleanInIfCondition,
+                (int)TypeErrorCategory.NonBooleanInWhileCondition,
+                (int)TypeErrorCategory.NonBooleanToTheRightOfNotOperator,
+                (int)TypeErrorCategory.ParameterTypeMismatch,
+                (int)TypeErrorCategory.InvalidTypeInWriteStatement,
+                (int)TypeErrorCategory.InvalidTypeInWriteStatement,
+                (int)TypeErrorCategory.InvalidTypeInReadStatement,
+                (int)TypeErrorCategory.InvalidTypeInReadStatement,
+                (int)TypeErrorCategory.NonIntegerInRandomizeStatement,
+                (int)TypeErrorCategory.NonIntegerInRandomizeStatement,
+                (int)TypeErrorCategory.NonIntegerValueInSendStatement,
+                (int)TypeErrorCategory.NonChannelInSendStatement,
+                (int)TypeErrorCategory.NonIntegerValueInReceiveStatement,
+                (int)TypeErrorCategory.NonChannelInReceiveStatement,
+                (int)TypeErrorCategory.NonChannelInOpenStatement,
             ];
 
         // Validate.
@@ -264,6 +286,7 @@ public class ParserTests
                 write i >= b;       $ Error: NonIntegerRightOfRelationalOperator = 455
                 write b + i;        $ Error: NonIntegerLeftOfAdditionOperator = 456
                 write i + (i <= 0); $ Error: NonIntegerRightOfAdditionOperator = 457
+                write - (i < 0);    $ Error: NonIntegerRightOfAdditionOperator = 457
                 write b * i;        $ Error: NonIntegerLeftOfMultiplicationOperator = 458
                 write i ^ b;        $ Error: NonIntegerRightOfMultiplicationOperator = 459
                 write Test() == b;  $ Error: TypeMismatchAcrossEqualityOperator = 451
@@ -274,17 +297,18 @@ public class ParserTests
         // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
-                451,  // TypeMismatchAcrossEqualityOperator
-                452,  // NonBooleanLeftOfLogicalOperator
-                453,  // NonBooleanRightOfLogicalOperator
-                454,  // NonIntegerLeftOfRelationalOperator
-                455,  // NonIntegerRightOfRelationalOperator
-                456,  // NonIntegerLeftOfAdditionOperator
-                457,  // NonIntegerRightOfAdditionOperator
-                458,  // NonIntegerLeftOfMultiplicationOperator
-                459,  // NonIntegerRightOfMultiplicationOperator
-                451,  // TypeMismatchAcrossEqualityOperator
-                460,  // InvalidTypeAcrossEqualityOperator
+                (int)DiadicTypeErrorCategory.TypeMismatchAcrossEqualityOperator,
+                (int)DiadicTypeErrorCategory.NonBooleanLeftOfLogicalOperator,
+                (int)DiadicTypeErrorCategory.NonBooleanRightOfLogicalOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerLeftOfRelationalOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerRightOfRelationalOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerLeftOfAdditionOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
+                (int)DiadicTypeErrorCategory. NonIntegerRightOfAdditionOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerLeftOfMultiplicationOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerRightOfMultiplicationOperator,
+                (int)DiadicTypeErrorCategory.TypeMismatchAcrossEqualityOperator,
+                (int)DiadicTypeErrorCategory.InvalidTypeAcrossEqualityOperator,
             ];
 
         // Validate.
@@ -352,8 +376,12 @@ public class ParserTests
         File.Delete(intermediateFilename);
     }
 
-    // Validates that the errors produced by the parser are as expected.
-    void ValidateErrors(string code, int[] expectedErrors)
+    /// <summary>
+    /// Validates that the errors produced by the parser are as expected.
+    /// </summary>
+    /// <param name="code">The program being parsed</param>
+    /// <param name="expectedErrors">Expected parsing errors</param>
+    private static void ValidateErrors(string code, int[] expectedErrors)
     {
         // The list of actual parsing errors.
         List<int> actualErrors = [];

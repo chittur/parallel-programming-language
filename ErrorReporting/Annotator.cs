@@ -275,30 +275,6 @@ public class Annotator
                                    "or uses non local variable(s), or both.";
                         break;
                     }
-
-                case KindErrorCategory.ParallelRecursionUsesIO:
-                    {
-                        message += "The previous procedure block employs parallel " +
-                                    "recursion, but uses input or output statement(s).";
-                        break;
-                    }
-
-                case KindErrorCategory.ParallelRecursionUsesNonLocals:
-                    {
-                        message += "The previous procedure block employs parallel " +
-                                   "recursion, but uses non local variable(s).";
-                        break;
-                    }
-
-                case KindErrorCategory.ParallelRecursionCallsUnfriendly:
-                    {
-                        message += "The previous procedure block employs parallel " +
-                                   "recursion, but invokes another procedure that is " +
-                                   "not parallel friendly; i.e. it either uses input " +
-                                   "/ output statement(s), or uses non local " +
-                                   "variable(s), or both.";
-                        break;
-                    }
             }
 
             PrintError("Kind", (int)category, message);

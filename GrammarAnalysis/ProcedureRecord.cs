@@ -33,7 +33,6 @@ public class ProcedureRecord
         UsesIO = false;
         HighestScopeUsed = ProcedureRecord.NoScope;
         CallsParallelUnfriendly = false;
-        ExamineParallelRecursion = false;
     }
 
     /// <summary>
@@ -52,10 +51,4 @@ public class ProcedureRecord
     /// non parallel-friendly procedure(s).
     /// </summary>
     public bool CallsParallelUnfriendly { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating if there is a need to examine parallel
-    /// recursion for the procedure.
-    /// </summary>
-    public bool ExamineParallelRecursion { get; set; }
 }

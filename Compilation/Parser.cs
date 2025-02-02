@@ -789,8 +789,7 @@ public class Parser
                                            stopSymbols));
 
             // Expect return variable name.
-            returnVariable = ExpectName(
-                                          new Set(returnVariableStopSymbols,
+            returnVariable = ExpectName(new Set(returnVariableStopSymbols,
                                                   rightBracketStopSymbols,
                                                   procedureNameStopSymbols,
                                                   leftParanthesisStopSymbols,
@@ -799,8 +798,7 @@ public class Parser
                                                   stopSymbols));
 
             // Expect "]".
-            Expect(Symbol.RightBracket,
-                                          new Set(rightBracketStopSymbols,
+            Expect(Symbol.RightBracket, new Set(rightBracketStopSymbols,
                                                   procedureNameStopSymbols,
                                                   leftParanthesisStopSymbols,
                                                   parameterDefinitionStopSymbols,
@@ -809,8 +807,7 @@ public class Parser
         }
 
         // Expect procedure name.
-        int procedureName = ExpectName(
-                                        new Set(procedureNameStopSymbols,
+        int procedureName = ExpectName(new Set(procedureNameStopSymbols,
                                                 leftParanthesisStopSymbols,
                                                 parameterDefinitionStopSymbols,
                                                 rightParanthesisStopSymbols,
@@ -888,15 +885,6 @@ public class Parser
         // Expect Block.
         Block(false, stopSymbols);
         int totalBlockVariables = _auditor.ObjectsLength;
-
-        // If the procedure uses parallel recursion, make sure it is 
-        // not accessing any non-local variables or using IO statements
-        // or calling parallel unfriendly procedures after the recursive 
-        // call was made.
-        if (objectRecord.ProcedureRecord.ExamineParallelRecursion)
-        {
-            ExamineRecursiveParallelFriendliness(objectRecord);
-        }
 
         // End of block.
         _auditor.EndBlock();
@@ -1766,40 +1754,6 @@ public class Parser
     }
 
     /// <summary>
-    /// Examines whether a procedure that employs parallel recursion
-    /// is parallel friendly.
-    /// </summary>
-    /// <param name="objectRecord">Object record of the procedure.</param>
-    void ExamineRecursiveParallelFriendliness(ObjectRecord objectRecord)
-    {
-        // Uses I/O statements?
-        if (objectRecord.ProcedureRecord.UsesIO)
-        {
-            _annotator.KindError(Kind.Procedure,
-                                     KindErrorCategory.ParallelRecursionUsesIO);
-        }
-
-        // Uses non local variables?
-        if ((objectRecord.ProcedureRecord.HighestScopeUsed !=
-                                                  ProcedureRecord.NoScope) &&
-            (objectRecord.ProcedureRecord.HighestScopeUsed <=
-                                                  objectRecord.MetaData.Level))
-        {
-            _annotator.KindError(
-                                Kind.Procedure,
-                                KindErrorCategory.ParallelRecursionUsesNonLocals);
-        }
-
-        // Calls parallel unfriendly procedures?
-        if (objectRecord.ProcedureRecord.CallsParallelUnfriendly)
-        {
-            _annotator.KindError(
-                            Kind.Procedure,
-                            KindErrorCategory.ParallelRecursionCallsUnfriendly);
-        }
-    }
-
-    /// <summary>
     /// ParallelStatement = "parallel" ProcedureInvocation
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
@@ -2372,23 +2326,6 @@ public class Parser
                                 procedureRecord.MetaData.Level)) ||
                           objectRecord.ProcedureRecord.UsesIO ||
                           objectRecord.ProcedureRecord.CallsParallelUnfriendly;
-            }
-
-            if (isParallel && (procedureRecord.Name == objectRecord.Name))
-            {
-                if ((procedureRecord.ProcedureRecord.CallsParallelUnfriendly) ||
-                    (procedureRecord.ProcedureRecord.UsesIO) ||
-                    ((objectRecord.ProcedureRecord.HighestScopeUsed !=
-                                              ProcedureRecord.NoScope) &&
-                     (objectRecord.ProcedureRecord.HighestScopeUsed <=
-                                              objectRecord.MetaData.Level)))
-                {
-                    procedureRecord.ProcedureRecord.ExamineParallelRecursion = false;
-                }
-                else
-                {
-                    procedureRecord.ProcedureRecord.ExamineParallelRecursion = true;
-                }
             }
         }
 

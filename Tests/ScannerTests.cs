@@ -34,7 +34,7 @@ public class ScannerTests
         const string Code = @"& = { boolean channel , constant / else } == false > >= if 
                              integer [ ( < <= - % * hello ! != 234 open | + ^ parallel 
                              @ randomize read receive reference ] ) ; send
-                             12345678901234567890 -> true # while write";
+                             12345678901234567890 -> true # ##~~ while write";
 
         // Expected set of symbols fot the code above.
         Symbol[] expected =
@@ -83,6 +83,7 @@ public class ScannerTests
                 Symbol.IntegerOutOfBounds,
                 Symbol.Through,
                 Symbol.True,
+                Symbol.Unknown,
                 Symbol.Unknown,
                 Symbol.While,
                 Symbol.Write,
