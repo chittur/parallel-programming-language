@@ -304,7 +304,7 @@ public class ParserTests
                 (int)DiadicTypeErrorCategory.NonIntegerRightOfRelationalOperator,
                 (int)DiadicTypeErrorCategory.NonIntegerLeftOfAdditionOperator,
                 (int)DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
-                (int)DiadicTypeErrorCategory. NonIntegerRightOfAdditionOperator,
+                (int)DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
                 (int)DiadicTypeErrorCategory.NonIntegerLeftOfMultiplicationOperator,
                 (int)DiadicTypeErrorCategory.NonIntegerRightOfMultiplicationOperator,
                 (int)DiadicTypeErrorCategory.TypeMismatchAcrossEqualityOperator,
@@ -391,8 +391,7 @@ public class ParserTests
         TextReader reader = new StringReader(code);
         bool compiled = parser.Compile(
             reader,
-            "Intermediate.sachin", // Intermediate code file.
-                                   // But should not be written to as compilation should fail.
+            "Intermediate.sachin",
             delegate (string errorCategory, int errorCode, string errorMessage)
             {
                 actualErrors.Add(errorCode);
