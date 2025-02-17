@@ -26,6 +26,102 @@ namespace Tests;
 public class EndToEndTests
 {
     /// <summary>
+    /// Tests 'array out of bounds' runtime error for overflow.
+    /// </summary>
+    [TestMethod]
+    public void TestOverflowArrayOutOfBoundsRuntimeError()
+    {
+        const string Code = @"
+            $ - Sample program that tests 'array out of bounds' runtime error.
+
+            {
+              integer[5] numbers;
+              numbers[6] = 1;
+            }
+            ";
+
+        // Validate that the program produces the expected runtime error.
+        Validate(Code, string.Empty, $"{Translator.ArrayIndexOutOfBoundsMessage}{Environment.NewLine}");
+    }
+
+    /// <summary>
+    /// Tests 'array out of bounds' runtime error for underflow.
+    /// </summary>
+    [TestMethod]
+    public void TestUnderflowArrayOutOfBoundsRuntimeError()
+    {
+        const string Code = @"
+            $ - Sample program that tests 'array out of bounds' runtime error.
+
+            {
+              integer[5] numbers;
+              numbers[0] = 1;
+            }
+            ";
+
+        // Validate that the program produces the expected runtime error.
+        Validate(Code, string.Empty, $"{Translator.ArrayIndexOutOfBoundsMessage}{Environment.NewLine}");
+    }
+
+    /// <summary>
+    /// Tests 'boolean input incorrect format' runtime error.
+    /// </summary>
+    [TestMethod]
+    public void TestBooleanInputIncorrectFormatRuntimeError()
+    {
+        const string Code = @"
+            $ - Sample program that tests 'boolean input incorrect format' runtime error.
+
+            {
+              boolean var;
+              read var;
+            }
+            ";
+
+        // Validate that the program produces the expected runtime error.
+        Validate(Code, $"0{Environment.NewLine}", $"{Translator.BooleanInputIncorrectFormatMessage}{Environment.NewLine}");
+    }
+
+    /// <summary>
+    /// Tests 'send through unopened channel' runtime error.
+    /// </summary>
+    [TestMethod]
+    public void TestSendThroughUnopenedChannelRuntimeError()
+    {
+        const string Code = @"
+            $ - Sample program that tests 'send through unopened channel' runtime error.
+
+            {
+              channel c;
+              send 1 -> c;
+            }
+            ";
+
+        // Validate that the program produces the expected runtime error.
+        Validate(Code, string.Empty, $"{Translator.SendThroughUnopenedChannelMessage}{Environment.NewLine}");
+    }
+
+    /// <summary>
+    /// Tests 'receive through unopened channel' runtime error.
+    /// </summary>
+    [TestMethod]
+    public void TestReceiveThroughUnopenedChannelRuntimeError()
+    {
+        const string Code = @"
+            $ - Sample program that tests 'receive through unopened channel' runtime error.
+
+            {
+              channel c;
+              integer i;
+              receive i -> c;
+            }
+            ";
+
+        // Validate that the program produces the expected runtime error.
+        Validate(Code, string.Empty, $"{Translator.ReceiveThroughUnopenedChannelMessage}{Environment.NewLine}");
+    }
+
+    /// <summary>
     /// Tests basic end-to-end flow, multiple assignment, and parallel recursion.
     /// </summary>
     [TestMethod]

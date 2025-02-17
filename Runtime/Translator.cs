@@ -13,7 +13,6 @@
  *****************************************************************************/
 
 using System;
-using System.Threading;
 using Intermediary;
 using Parallelism;
 
@@ -33,6 +32,14 @@ internal class Translator : Node
     private bool _running;             // Running mode?
     private bool _mainProcedure;       // Main procedure for the node?
     private readonly Interpreter _interpreter;  // The interpreter instance.
+
+    // Exception messages.
+    internal const string StackOverflowMessage = "Stack overflow.";
+    internal const string IncorrectOpcodeMessage = "Incorrect opcode.";
+    internal const string ArrayIndexOutOfBoundsMessage = "Array index is out of bounds.";
+    internal const string BooleanInputIncorrectFormatMessage = "Boolean input was not in the correct format.";
+    internal const string SendThroughUnopenedChannelMessage = "Attempt to send through an un-opened channel.";
+    internal const string ReceiveThroughUnopenedChannelMessage = "Attempt to receive through an un-opened channel.";
 
     /// <summary>
     /// Creates an instance of Translator, which provides methods to interpret
@@ -98,7 +105,7 @@ internal class Translator : Node
         {
             if (_programRegister >= (Interpreter.Max - 2))
             {
-                throw new Exception("Stack overflow.");
+                throw new Exception(StackOverflowMessage);
             }
 
             Opcode opcode = (Opcode)_interpreter.Store[_programRegister];
@@ -349,7 +356,7 @@ internal class Translator : Node
 
                 default:
                     {
-                        throw new Exception("Incorrect opcode.");
+                        throw new Exception(IncorrectOpcodeMessage);
                     }
             }
         }
@@ -364,7 +371,7 @@ internal class Translator : Node
         _stackRegister += words;
         if (_stackRegister >= Interpreter.Max)
         {
-            throw new Exception("Stack overflow.");
+            throw new Exception(StackOverflowMessage);
         }
     }
 
@@ -416,7 +423,7 @@ internal class Translator : Node
         --_stackRegister;
         if ((i < 1) || (i > bound))
         {
-            throw new Exception("Array index is out of bounds.");
+            throw new Exception(ArrayIndexOutOfBoundsMessage);
         }
         else
         {
@@ -658,7 +665,7 @@ internal class Translator : Node
         }
         else
         {
-            throw new Exception("Boolean input was not in the correct format.");
+            throw new Exception(BooleanInputIncorrectFormatMessage);
         }
 
         ++_programRegister;
@@ -791,7 +798,7 @@ internal class Translator : Node
 
         if (error)
         {
-            throw new Exception("Attempt to send through an un-opened channel.");
+            throw new Exception(SendThroughUnopenedChannelMessage);
         }
         else
         {
@@ -818,7 +825,7 @@ internal class Translator : Node
 
         if (error)
         {
-            throw new Exception("Attempt to receive through an un-opened channel.");
+            throw new Exception(ReceiveThroughUnopenedChannelMessage);
         }
         else
         {
