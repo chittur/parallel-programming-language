@@ -172,6 +172,11 @@ A compiler fits nicely into a waterfall model of systematic development. The cod
 - **Runtime**: Provides methods to interpret and execute the intermediate code, in parallel when required.
 - **Executive**: The executive class for this project which gets the user input, and calls into the relevant modules (compilation, runtime etc.) as appropriate.
 
+### Unit Tests and Code Coverage
+As of February 2025, all automated tests are passing in the pipeline. The line code coverage is 100%, and the branch code coverage is close to 100%.
+![Unit tests](Images/TestRun.png)
+![Code coverage](Images/CodeCoverage.png)
+
 ## Appendix
 ### Backus-Naur form
 Here is the complete BNF for the language.
