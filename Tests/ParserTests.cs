@@ -272,6 +272,35 @@ public class ParserTests
     }
 
     /// <summary>
+    /// Tests various type errors in procedure return.
+    /// </summary>
+    [TestMethod]
+    public void TestTypeDefinitionErrorsInProdecureReturn()
+    {
+        // Code which should result in compilation errors.
+        const string Code = @"
+            {
+                @ [a b]
+            }
+            ";
+
+        // Expected compilation errors for the code above.
+        int[] expectedErrors =
+            [
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+            ];
+
+        // Validate.
+        ValidateErrors(Code, expectedErrors);
+    }
+
+    /// <summary>
     /// Tests various type errors for diadic operators.
     /// </summary>
     [TestMethod]

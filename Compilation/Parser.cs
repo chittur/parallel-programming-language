@@ -245,7 +245,7 @@ public class Parser
     /// </param>
     private void Operation(Symbol symbol)
     {
-        switch (symbol)
+       switch (symbol)
         {
             case Symbol.Plus:
                 {
@@ -333,7 +333,7 @@ public class Parser
 
             default:
                 {
-                    Debug.Assert(false, "Invalid operation symbol.");
+                    Debug.Assert(false, $"Invalid operation symbol {symbol}.");
                     break;
                 }
         }
@@ -512,6 +512,12 @@ public class Parser
     /// <returns>A value indicating whether to expect a semicolon.</returns>
     private bool Definition(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.Constant ||
+                     CurrentSymbol == Symbol.Integer ||
+                     CurrentSymbol == Symbol.Boolean ||
+                     CurrentSymbol == Symbol.Channel ||
+                     CurrentSymbol == Symbol.Procedure,
+                     $"Definition: Invalid definition symbol {CurrentSymbol}.");
         bool expectSemicolon = true;
         switch (CurrentSymbol)
         {
@@ -534,12 +540,6 @@ public class Parser
                 {
                     ProcedureDefinition(stopSymbols);
                     expectSemicolon = false;
-                    break;
-                }
-
-            default:
-                {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
                     break;
                 }
         }
@@ -1351,6 +1351,7 @@ public class Parser
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void BooleanSymbol(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.False || CurrentSymbol == Symbol.True, $"BooleanSymbol: Invalid symbol {CurrentSymbol}.");
         switch (CurrentSymbol)
         {
             case Symbol.False:
@@ -1362,12 +1363,6 @@ public class Parser
             case Symbol.True:
                 {
                     Expect(Symbol.True, stopSymbols);
-                    break;
-                }
-
-            default:
-                {
-                    Debug.Assert(false, $"BooleanSymbol: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -1389,6 +1384,17 @@ public class Parser
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void Statement(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.Read ||
+                     CurrentSymbol == Symbol.Write ||
+                     CurrentSymbol == Symbol.Name ||
+                     CurrentSymbol == Symbol.If ||
+                     CurrentSymbol == Symbol.While ||
+                     CurrentSymbol == Symbol.Randomize ||
+                     CurrentSymbol == Symbol.Open ||
+                     CurrentSymbol == Symbol.Send ||
+                     CurrentSymbol == Symbol.Receive ||
+                     CurrentSymbol == Symbol.Parallel,
+                     $"Statement: Invalid symbol {CurrentSymbol}.");
         switch (CurrentSymbol)
         {
             case Symbol.Read:
@@ -1458,12 +1464,6 @@ public class Parser
             case Symbol.Parallel:
                 {
                     ParallelStatement(stopSymbols);
-                    break;
-                }
-
-            default:
-                {
-                    Debug.Assert(false, $"Statement: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -2009,6 +2009,7 @@ public class Parser
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void AddingOperator(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.Plus || CurrentSymbol == Symbol.Minus, $"AddingOperator: Invalid symbol {CurrentSymbol}.");
         switch (CurrentSymbol)
         {
             case Symbol.Plus:
@@ -2022,12 +2023,6 @@ public class Parser
                     Expect(Symbol.Minus, stopSymbols);
                     break;
                 }
-
-            default:
-                {
-                    Debug.Assert(false, $"AddingOperator: Invalid symbol {CurrentSymbol}.");
-                    break;
-                }
         }
     }
 
@@ -2037,6 +2032,13 @@ public class Parser
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void RelationalOperator(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.Less ||
+                     CurrentSymbol == Symbol.LessOrEqual ||
+                     CurrentSymbol == Symbol.Equal ||
+                     CurrentSymbol == Symbol.NotEqual ||
+                     CurrentSymbol == Symbol.Greater ||
+                     CurrentSymbol == Symbol.GreaterOrEqual,
+                     $"RelationalOperator: Invalid symbol {CurrentSymbol}.");
         switch (CurrentSymbol)
         {
             case Symbol.Less:
@@ -2074,12 +2076,6 @@ public class Parser
                     Expect(Symbol.GreaterOrEqual, stopSymbols);
                     break;
                 }
-
-            default:
-                {
-                    Debug.Assert(false, $"RelationalOperator: Invalid symbol {CurrentSymbol}.");
-                    break;
-                }
         }
     }
 
@@ -2089,6 +2085,7 @@ public class Parser
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void PrimaryOperator(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.And || CurrentSymbol == Symbol.Or, $"PrimaryOperator: Invalid symbol {CurrentSymbol}.");
         switch (CurrentSymbol)
         {
             case Symbol.And:
@@ -2102,12 +2099,6 @@ public class Parser
                     Expect(Symbol.Or, stopSymbols);
                     break;
                 }
-
-            default:
-                {
-                    Debug.Assert(false, $"PrimaryOperator: Invalid symbol {CurrentSymbol}.");
-                    break;
-                }
         }
     }
 
@@ -2117,6 +2108,11 @@ public class Parser
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void MultiplyingOperator(Set stopSymbols)
     {
+        Debug.Assert(CurrentSymbol == Symbol.Multiply ||
+                     CurrentSymbol == Symbol.Divide ||
+                     CurrentSymbol == Symbol.Modulo ||
+                     CurrentSymbol == Symbol.Power,
+                     $"MultiplyingOperator: Invalid symbol {CurrentSymbol}.");
         switch (CurrentSymbol)
         {
             case Symbol.Multiply:
@@ -2140,12 +2136,6 @@ public class Parser
             case Symbol.Power:
                 {
                     Expect(Symbol.Power, stopSymbols);
-                    break;
-                }
-
-            default:
-                {
-                    Debug.Assert(false, $"MultiplyingOperator: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }

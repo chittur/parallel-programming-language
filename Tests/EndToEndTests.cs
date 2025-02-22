@@ -308,6 +308,7 @@ public class EndToEndTests
 
                 read i, b, c;
                 randomize j;
+                j = 3 + 4;
                 i = i ^ 2;
                 i = i + 1 - 1;
                 i = i * (3 % 2);
