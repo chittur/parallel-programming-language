@@ -58,7 +58,8 @@ public class Auditor
     /// </summary>
     public int ObjectsLength
     {
-        get {
+        get
+        {
             int count = 0;
             ObjectRecord record = _blockTable[BlockLevel];
             while (record != null)
