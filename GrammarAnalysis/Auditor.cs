@@ -150,8 +150,7 @@ public class Auditor
         }
         else
         {
-            bool isInputParameter = (metaData.Kind == Kind.ReferenceParameter) ||
-                                     (metaData.Kind == Kind.ValueParameter);
+            bool isInputParameter = (metaData.Kind == Kind.ReferenceParameter) || (metaData.Kind == Kind.ValueParameter);
             bool isProcedure = metaData.Kind == Kind.Procedure;
 
             objectRecord = new ObjectRecord

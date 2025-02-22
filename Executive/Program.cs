@@ -27,9 +27,7 @@ internal class Program
     /// </summary>
     private static void PrintHelp()
     {
-        Console.WriteLine("{0}{1}",
-                          "help".PadRight(35),
-                          ": Prints help message.\n");
+        Console.WriteLine("{0}{1}", "help".PadRight(35), ": Prints help message.\n");
 
         Console.WriteLine("{0}{1}{2}{3}{4}{5}",
                           "compile <filename>".PadRight(35),

@@ -17,6 +17,77 @@ using Type = LanguageConstructs.Type;
 namespace ErrorReporting;
 
 /// <summary>
+/// Error message constants.
+/// </summary>
+static class ErrorMessages
+{
+    // // Internal error messages.
+    internal const string InvalidOperationSymbol = "An invalid symbol has been passed to generate operation code.";
+    internal const string AssemblyTableIsFull = "Assembly table is full; the compiler has run out of memory.";
+    internal const string InternalProcessingError = "Internal processing error.";
+    internal const string Internal = "Internal";
+
+    // Generic syntax error messages.
+    internal const string Syntax = "Syntax";
+
+    // Scope error messages.
+    internal const string AmbiguousName = "The name has been declared already.";
+    internal const string UndefinedName = "The name is undefined in the current scope.";
+    internal const string Scope = "Scope";
+
+    // Kind error messages.
+    internal const string NonConstantInConstantDefinition = "Right hand side entity in constant definition is not a constant.";
+    internal const string AssignmentModifiesConstant = "Assignment statement is attempting to modify the value of a constant.";
+    internal const string ArrayVariableMissingIndexedSelector = "Variable of kind array is missing indexed selector.";
+    internal const string NonPositiveIntegerIndexInArrayDeclaration = "The index for array declaration does not evaluate to a positive integer.";
+    internal const string ProcedureAccessedAsObject = "A procedure name is used where an object name was expected.";
+    internal const string ArgumentCountMismatch = "The argument count in procedure invocation does not tally with the parameter count specified in its signature.";
+    internal const string ParameterKindMismatch = "Mismatch in reference-value parameter kind between an argument and its corresponding parameter.";
+    internal const string ConstantPassedAsReferenceParameter = "A constant object is being passed as reference parameter.";
+    internal const string AssignmentCountMismatch = "The expression list count to the right of the assignment operator does not tally with the variable access count to the left of it.";
+    internal const string ReadModifiesConstant = "Read statement is attempting to modify the value of a constant.";
+    internal const string RandomizeModifiesConstant = "Randomize statement is attempting to modify the value of a constant.";
+    internal const string ReceiveModifiesConstant = "Receive statement is attempting to modify the value of a constant.";
+    internal const string NonProcedureInParallelStatement = "Parallel statement is not used for procedure invocation.";
+    internal const string ParallelProcedureHasNonVoidReturn = "Procedure invoked in parallel statement does not have a void return type.";
+    internal const string ParallelProcedureHasReferenceParameter = "Procedure invoked in parallel statement contains reference parameter.";
+    internal const string ParallelProcedureHasNoChannelParameter = "Procedure invoked in parallel statement does not contain any channel parameter.";
+    internal const string ParallelProcedureUsesIO = "Procedure invoked in parallel statement uses input or output statement(s).";
+    internal const string ParallelProcedureUsesNonLocals = "Procedure invoked in parallel statement uses non local variable(s).";
+    internal const string ParallelProcedureCallsUnfriendly = "Procedure invoked in parallel statement invokes another procedure that is not parallel friendly; i.e. it either uses input / output statement(s), or uses non local variable(s), or both.";
+    internal const string Kind = "Kind";
+
+    // Type error messages.
+    internal const string NonIntegerIndexInArrayDeclaration = "The index for array declaration is not of type integer.";
+    internal const string NonIntegerArrayIndex = "Index for array variable does not evaluate to type integer.";
+    internal const string TypeMismatchInAssignment = "Types don't match on either side of assignment operator.";
+    internal const string NonBooleanInIfCondition = "Conditional expression for if statement does not evaluate to type boolean.";
+    internal const string NonBooleanInWhileCondition = "Conditional expression for while statement does not evaluate to type boolean.";
+    internal const string NonBooleanToTheRightOfNotOperator = "Right hand side of Not operator does not evaluate to type boolean.";
+    internal const string MinusPrecedingNonIntegerInConstantDefinition = "Minus symbol precedes a non-integer constant in constant definition.";
+    internal const string ParameterTypeMismatch = "Type mismatch between an argument and its corresponding parameter.";
+    internal const string InvalidTypeInWriteStatement = "Expression in write statement does not evaluate to type integer or boolean.";
+    internal const string InvalidTypeInReadStatement = "Object in read statement is not of type integer or boolean.";
+    internal const string NonIntegerInRandomizeStatement = "Object in randomize statement is not of type integer.";
+    internal const string NonIntegerValueInSendStatement = "Attempt to send a non-integer value.";
+    internal const string NonChannelInSendStatement = "Attempt to send a value through a non-channel variable.";
+    internal const string NonIntegerValueInReceiveStatement = "Attempt to receive a non-integer value.";
+    internal const string NonChannelInReceiveStatement = "Attempt to receive a value through a non-channel variable.";
+    internal const string NonChannelInOpenStatement = "Object in open statement is not of type channel.";
+    internal const string TypeMismatchAcrossEqualityOperator = "Types don't match on either side of equality operator, ";
+    internal const string NonBooleanLeftOfLogicalOperator = "Expression to the left of logical operator, ";
+    internal const string NonBooleanRightOfLogicalOperator = "Expression to the right of logical operator, ";
+    internal const string NonIntegerLeftOfRelationalOperator = "Expression to the left of relational operator, ";
+    internal const string NonIntegerRightOfRelationalOperator = "Expression to the right of relational operator, ";
+    internal const string NonIntegerLeftOfAdditionOperator = "Expression to the left of addition operator, ";
+    internal const string NonIntegerRightOfAdditionOperator = "Expression to the right of addition operator, ";
+    internal const string NonIntegerLeftOfMultiplicationOperator = "Expression to the left of multiplication operator, ";
+    internal const string NonIntegerRightOfMultiplicationOperator = "Expression to the right of multiplication operator, ";
+    internal const string InvalidTypeAcrossEqualityOperator = "Invalid type used across equality operator, ";
+    internal const string Type = "Type";
+}
+
+/// <summary>
 /// Provides methods to print out various types of compilation errors.
 /// </summary>
 public class Annotator
@@ -65,26 +136,24 @@ public class Annotator
         {
             case InternalErrorCategory.InvalidOperationSymbol:
                 {
-                    message += "An invalid symbol has been passed " +
-                               "to generate operation code.";
+                    message = ErrorMessages.InvalidOperationSymbol;
                     break;
                 }
 
             case InternalErrorCategory.AssemblyTableIsFull:
                 {
-                    message += "Assembly table is full; " +
-                               "the compiler has run out of memory.";
+                    message = ErrorMessages.AssemblyTableIsFull;
                     break;
                 }
 
             case InternalErrorCategory.InternalProcessingError:
                 {
-                    message += "Internal processing error.";
+                    message = ErrorMessages.InternalProcessingError;
                     break;
                 }
         }
 
-        PrintError("Internal", (int)category, message);
+        PrintError(ErrorMessages.Internal, (int)category, message);
     }
 
     /// <summary>
@@ -93,9 +162,7 @@ public class Annotator
     public void SyntaxError()
     {
         ErrorFree = false;
-        PrintError("Syntax",
-                        (int)GenericErrorCategory.GenericSyntaxError,
-                        string.Empty);
+        PrintError(ErrorMessages.Syntax, (int)GenericErrorCategory.GenericSyntaxError, string.Empty);
     }
 
     /// <summary>
@@ -111,18 +178,18 @@ public class Annotator
         {
             case ScopeErrorCategory.AmbiguousName:
                 {
-                    message += "The name has been declared already.";
+                    message = ErrorMessages.AmbiguousName;
                     break;
                 }
 
             case ScopeErrorCategory.UndefinedName:
                 {
-                    message += "The name is undefined in the current scope.";
+                    message = ErrorMessages.UndefinedName;
                     break;
                 }
         }
 
-        PrintError("Scope", (int)category, message);
+        PrintError(ErrorMessages.Scope, (int)category, message);
     }
 
     /// <summary>
@@ -142,142 +209,120 @@ public class Annotator
             {
                 case KindErrorCategory.NonConstantInConstantDefinition:
                     {
-                        message += "Right hand side entity in constant definition " +
-                                   "is not a constant.";
+                        message = ErrorMessages.NonConstantInConstantDefinition;
                         break;
                     }
 
                 case KindErrorCategory.AssignmentModifiesConstant:
                     {
-                        message += "Assignment statement is attempting to modify " +
-                                   "the value of a constant.";
+                        message = ErrorMessages.AssignmentModifiesConstant;
                         break;
                     }
 
                 case KindErrorCategory.ArrayVariableMissingIndexedSelector:
                     {
-                        message += "Variable of kind array is missing indexed selector.";
+                        message = ErrorMessages.ArrayVariableMissingIndexedSelector;
                         break;
                     }
 
                 case KindErrorCategory.NonPositiveIntegerIndexInArrayDeclaration:
                     {
-                        message += "The index for array declaration does not evaluate " +
-                                   "to a positive integer.";
+                        message = ErrorMessages.NonPositiveIntegerIndexInArrayDeclaration;
                         break;
                     }
 
                 case KindErrorCategory.ProcedureAccessedAsObject:
                     {
-                        message += "A procedure name is used where an object name was " +
-                                   "expected.";
+                        message = ErrorMessages.ProcedureAccessedAsObject;
                         break;
                     }
 
                 case KindErrorCategory.ArgumentCountMismatch:
                     {
-                        message += "The argument count in procedure invocation does " +
-                                   "not tally with the parameter count specified in " +
-                                   "its signature.";
+                        message = ErrorMessages.ArgumentCountMismatch;
                         break;
                     }
 
                 case KindErrorCategory.ParameterKindMismatch:
                     {
-                        message += "Mismatch in reference-value parameter kind between " +
-                                   "an argument and its corresponding parameter.";
+                        message = ErrorMessages.ParameterKindMismatch;
                         break;
                     }
 
                 case KindErrorCategory.ConstantPassedAsReferenceParameter:
                     {
-                        message += "A constant object is being passed as reference " +
-                                   "parameter.";
+                        message = ErrorMessages.ConstantPassedAsReferenceParameter;
                         break;
                     }
 
                 case KindErrorCategory.AssignmentCountMismatch:
                     {
-                        message += "The expression list count to the right of the " +
-                                   "assignment operator does not tally with the " +
-                                   "variable access count to the left of it.";
+                        message = ErrorMessages.AssignmentCountMismatch;
                         break;
                     }
 
                 case KindErrorCategory.ReadModifiesConstant:
                     {
-                        message += "Read statement is attempting to modify the value " +
-                                   "of a constant.";
+                        message = ErrorMessages.ReadModifiesConstant;
                         break;
                     }
 
                 case KindErrorCategory.RandomizeModifiesConstant:
                     {
-                        message += "Randomize statement is attempting to modify the " +
-                                   "value of a constant.";
+                        message = ErrorMessages.RandomizeModifiesConstant;
                         break;
                     }
 
                 case KindErrorCategory.ReceiveModifiesConstant:
                     {
-                        message += "Receive statement is attempting to modify the " +
-                                   "value of a constant.";
+                        message = ErrorMessages.ReceiveModifiesConstant;
                         break;
                     }
 
                 case KindErrorCategory.NonProcedureInParallelStatement:
                     {
-                        message += "Parallel statement is not used for procedure " +
-                                   "invocation.";
+                        message = ErrorMessages.NonProcedureInParallelStatement;
                         break;
                     }
 
                 case KindErrorCategory.ParallelProcedureHasNonVoidReturn:
                     {
-                        message += "Procedure invoked in parallel statement does " +
-                                   "not have a void return type.";
+                        message = ErrorMessages.ParallelProcedureHasNonVoidReturn;
                         break;
                     }
 
                 case KindErrorCategory.ParallelProcedureHasReferenceParameter:
                     {
-                        message += "Procedure invoked in parallel statement contains " +
-                                   "reference parameter.";
+                        message = ErrorMessages.ParallelProcedureHasReferenceParameter;
                         break;
                     }
 
                 case KindErrorCategory.ParallelProcedureHasNoChannelParameter:
                     {
-                        message += "Procedure invoked in parallel statement does not " +
-                                   "contain any channel parameter.";
+                        message = ErrorMessages.ParallelProcedureHasNoChannelParameter;
                         break;
                     }
 
                 case KindErrorCategory.ParallelProcedureUsesIO:
                     {
-                        message += "Procedure invoked in parallel statement uses input " +
-                                   "or output statement(s).";
+                        message = ErrorMessages.ParallelProcedureUsesIO;
                         break;
                     }
 
                 case KindErrorCategory.ParallelProcedureUsesNonLocals:
                     {
-                        message += "Procedure invoked in parallel statement " +
-                                   "uses non local variable(s).";
+                        message = ErrorMessages.ParallelProcedureUsesNonLocals;
                         break;
                     }
 
                 case KindErrorCategory.ParallelProcedureCallsUnfriendly:
                     {
-                        message += "Procedure invoked in parallel statement invokes " +
-                                   "another procedure that is not parallel friendly; " +
-                                   "i.e. it either uses input / output statement(s), " +
-                                   "or uses non local variable(s), or both.";
+                        message = ErrorMessages.ParallelProcedureCallsUnfriendly;
                         break;
                     }
             }
 
-            PrintError("Kind", (int)category, message);
+            PrintError(ErrorMessages.Kind, (int)category, message);
         }
     }
 
@@ -298,114 +343,102 @@ public class Annotator
             {
                 case TypeErrorCategory.NonIntegerIndexInArrayDeclaration:
                     {
-                        message += "The index for array declaration is not of type " +
-                                   "integer.";
+                        message = ErrorMessages.NonIntegerIndexInArrayDeclaration;
                         break;
                     }
 
                 case TypeErrorCategory.NonIntegerArrayIndex:
                     {
-                        message += "Index for array variable does not evaluate " +
-                                   "to type integer.";
+                        message = ErrorMessages.NonIntegerArrayIndex;
                         break;
                     }
 
                 case TypeErrorCategory.TypeMismatchInAssignment:
                     {
-                        message += "Types don't match on either side of " +
-                                   "assignment operator.";
+                        message = ErrorMessages.TypeMismatchInAssignment;
                         break;
                     }
 
                 case TypeErrorCategory.NonBooleanInIfCondition:
                     {
-                        message += "Conditional expression for if statement does not " +
-                                   "evaluate to type boolean.";
+                        message = ErrorMessages.NonBooleanInIfCondition;
                         break;
                     }
 
                 case TypeErrorCategory.NonBooleanInWhileCondition:
                     {
-                        message += "Conditional expression for while statement does not " +
-                                   "evaluate to type boolean.";
+                        message = ErrorMessages.NonBooleanInWhileCondition;
                         break;
                     }
 
                 case TypeErrorCategory.NonBooleanToTheRightOfNotOperator:
                     {
-                        message += "Right hand side of Not operator does not " +
-                                   "evaluate to type boolean.";
+                        message = ErrorMessages.NonBooleanToTheRightOfNotOperator;
                         break;
                     }
 
                 case TypeErrorCategory.MinusPrecedingNonIntegerInConstantDefinition:
                     {
-                        message += "Minus symbol precedes a non-integer constant " +
-                                   "in constant definition.";
+                        message = ErrorMessages.MinusPrecedingNonIntegerInConstantDefinition;
                         break;
                     }
 
                 case TypeErrorCategory.ParameterTypeMismatch:
                     {
-                        message += "Type mismatch between an argument and its " +
-                                   "corresponding parameter.";
+                        message = ErrorMessages.ParameterTypeMismatch;
                         break;
                     }
 
                 case TypeErrorCategory.InvalidTypeInWriteStatement:
                     {
-                        message += "Expression in write statement does not evaluate to " +
-                                   "type integer or boolean.";
+                        message = ErrorMessages.InvalidTypeInWriteStatement;
                         break;
                     }
 
                 case TypeErrorCategory.InvalidTypeInReadStatement:
                     {
-                        message += "Object in read statement is not of type integer " +
-                                   "or boolean.";
+                        message = ErrorMessages.InvalidTypeInReadStatement;
                         break;
                     }
 
                 case TypeErrorCategory.NonIntegerInRandomizeStatement:
                     {
-                        message += "Object in randomize statement is not of type integer.";
+                        message = ErrorMessages.NonIntegerInRandomizeStatement;
                         break;
                     }
 
                 case TypeErrorCategory.NonIntegerValueInSendStatement:
                     {
-                        message += "Attempt to send a non-integer value.";
+                        message = ErrorMessages.NonIntegerValueInSendStatement;
                         break;
                     }
 
                 case TypeErrorCategory.NonChannelInSendStatement:
                     {
-                        message += "Attempt to send a value through a non-channel " +
-                                   "variable.";
+                        message = ErrorMessages.NonChannelInSendStatement;
                         break;
                     }
 
                 case TypeErrorCategory.NonIntegerValueInReceiveStatement:
                     {
-                        message += "Attempt to receive a non-integer value.";
+                        message = ErrorMessages.NonIntegerValueInReceiveStatement;
                         break;
                     }
 
                 case TypeErrorCategory.NonChannelInReceiveStatement:
                     {
-                        message += "Attempt to receive a value through a non-channel " +
-                                   "variable.";
+                        message = ErrorMessages.NonChannelInReceiveStatement;
                         break;
                     }
 
                 case TypeErrorCategory.NonChannelInOpenStatement:
                     {
-                        message += "Object in open statement is not of type channel.";
+                        message = ErrorMessages.NonChannelInOpenStatement;
                         break;
                     }
             }
 
-            PrintError("Type", (int)category, message);
+            PrintError(ErrorMessages.Type, (int)category, message);
         }
     }
 
@@ -419,9 +452,7 @@ public class Annotator
     /// <param name="type">Type of the object.</param>
     /// <param name="category">Category of type error.</param>
     /// <param name="diadicOperator">The diadicOperator.</param>
-    public void TypeError(Type type,
-                          DiadicTypeErrorCategory category,
-                          Symbol diadicOperator)
+    public void TypeError(Type type, DiadicTypeErrorCategory category, Symbol diadicOperator)
     {
         ErrorFree = false;
 
@@ -433,84 +464,66 @@ public class Annotator
             {
                 case DiadicTypeErrorCategory.TypeMismatchAcrossEqualityOperator:
                     {
-                        message += "Types don't match on either side of equality " +
-                                   "operator, " + diadicOperator.ToString() + ".";
+                        message = $"{ErrorMessages.TypeMismatchAcrossEqualityOperator}{diadicOperator}.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonBooleanLeftOfLogicalOperator:
                     {
-                        message += "Expression to the left of logical operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type boolean.";
+                        message = $"{ErrorMessages.NonBooleanLeftOfLogicalOperator}{diadicOperator}, does not evaluate to type boolean.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonBooleanRightOfLogicalOperator:
                     {
-                        message += "Expression to the right of logical operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type boolean.";
+                        message = $"{ErrorMessages.NonBooleanRightOfLogicalOperator}{diadicOperator}, does not evaluate to type boolean.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonIntegerLeftOfRelationalOperator:
                     {
-                        message += "Expression to the left of relational operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type integer.";
+                        message = $"{ErrorMessages.NonIntegerLeftOfRelationalOperator}{diadicOperator}, does not evaluate to type integer.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonIntegerRightOfRelationalOperator:
                     {
-                        message += "Expression to the right of relational operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type integer.";
+                        message = $"{ErrorMessages.NonIntegerRightOfRelationalOperator}{diadicOperator}, does not evaluate to type integer.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonIntegerLeftOfAdditionOperator:
                     {
-                        message += "Expression to the left of addition operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type integer.";
+                        message = $"{ErrorMessages.NonIntegerLeftOfAdditionOperator}{diadicOperator}, does not evaluate to type integer.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator:
                     {
-                        message += "Expression to the right of addition operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type integer.";
+                        message = $"{ErrorMessages.NonIntegerRightOfAdditionOperator}{diadicOperator}, does not evaluate to type integer.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonIntegerLeftOfMultiplicationOperator:
                     {
-                        message += "Expression to the left of multiplication operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type integer.";
+                        message = $"{ErrorMessages.NonIntegerLeftOfMultiplicationOperator}{diadicOperator}, does not evaluate to type integer.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.NonIntegerRightOfMultiplicationOperator:
                     {
-                        message += "Expression to the right of multiplication operator, " +
-                                   diadicOperator.ToString() +
-                                   ", does not evaluate to type integer.";
+                        message = $"{ErrorMessages.NonIntegerRightOfMultiplicationOperator}{diadicOperator}, does not evaluate to type integer.";
                         break;
                     }
 
                 case DiadicTypeErrorCategory.InvalidTypeAcrossEqualityOperator:
                     {
-                        message += "Invalid type used across equality operator, " +
-                                   diadicOperator.ToString();
+                        message = $"{ErrorMessages.InvalidTypeAcrossEqualityOperator}{diadicOperator}.";
                         break;
                     }
             }
 
-            PrintError("Type", (int)category, message);
+            PrintError(ErrorMessages.Type, (int)category, message);
         }
     }
 

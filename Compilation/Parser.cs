@@ -334,8 +334,7 @@ public class Parser
 
             default:
                 {
-                    _annotator.InternalError(
-                      InternalErrorCategory.InvalidOperationSymbol);
+                    _annotator.InternalError(InternalErrorCategory.InvalidOperationSymbol);
                     break;
                 }
         }
@@ -358,8 +357,7 @@ public class Parser
         Block(false, stopSymbols);
 
         // Resolve the label for total objects length in this block.
-        _assembler.ResolveArgument(objectsLengthLabel,
-                                       _auditor.ObjectsLength);
+        _assembler.ResolveArgument(objectsLengthLabel, _auditor.ObjectsLength);
 
         // Define end of the block.
         _auditor.EndBlock();
@@ -410,24 +408,23 @@ public class Parser
 
         // Analyze.
         Expect(Symbol.Begin, new Set(beginStopSymbols,
-                                          definitionPartStopSymbols,
-                                          statementPartStopSymbols,
-                                          endStopSymbols,
-                                          stopSymbols));
+                                     definitionPartStopSymbols,
+                                     statementPartStopSymbols,
+                                     endStopSymbols,
+                                     stopSymbols));
         DefinitionPart(new Set(definitionPartStopSymbols,
-                                    statementPartStopSymbols,
-                                    endStopSymbols,
-                                    stopSymbols));
+                               statementPartStopSymbols,
+                               endStopSymbols,
+                               stopSymbols));
         StatementPart(new Set(statementPartStopSymbols,
-                                   endStopSymbols,
-                                   stopSymbols));
+                              endStopSymbols,
+                              stopSymbols));
         Expect(Symbol.End, new Set(endStopSymbols, stopSymbols));
 
         if (newBlock)
         {
             // Resolve the label for total objects length in this block.
-            _assembler.ResolveArgument(objectsLengthLabel,
-                                           _auditor.ObjectsLength);
+            _assembler.ResolveArgument(objectsLengthLabel, _auditor.ObjectsLength);
 
             // Assemble code for "end-of-block".
             _assembler.EndBlock();
@@ -459,14 +456,10 @@ public class Parser
         // Analyze. "if" and "while" statements are not followed by semicolon.
         while (definitionSymbols.Contains(CurrentSymbol))
         {
-            bool expectSemiColon = Definition(
-                                              new Set(definitionPartStopSymbols,
-                                                      stopSymbols));
+            bool expectSemiColon = Definition(new Set(definitionPartStopSymbols, stopSymbols));
             if (expectSemiColon)
             {
-                Expect(Symbol.SemiColon, new Set(semiColonStopSymbols,
-                                                      definitionPartStopSymbols,
-                                                      stopSymbols));
+                Expect(Symbol.SemiColon, new Set(semiColonStopSymbols, definitionPartStopSymbols, stopSymbols));
             }
         }
     }
@@ -490,8 +483,7 @@ public class Parser
                                        Symbol.Parallel);
         while (statementSymbols.Contains(CurrentSymbol))
         {
-            if (IsCurrentSymbol(Symbol.If) ||
-                IsCurrentSymbol(Symbol.While))
+            if (IsCurrentSymbol(Symbol.If) || IsCurrentSymbol(Symbol.While))
             {
                 // Define stop symbols.
                 Set statementStopSymbols = new Set(statementSymbols);
@@ -507,9 +499,7 @@ public class Parser
 
                 // Analyze.
                 Statement(new Set(statementStopSymbols, stopSymbols));
-                Expect(Symbol.SemiColon, new Set(semiColonStopSymbols,
-                                                      statementStopSymbols,
-                                                      stopSymbols));
+                Expect(Symbol.SemiColon, new Set(semiColonStopSymbols, statementStopSymbols, stopSymbols));
             }
         }
     }
@@ -577,21 +567,19 @@ public class Parser
 
         // Expect "constant".
         Expect(Symbol.Constant, new Set(constantStopSymbols,
-                                             constantNameStopSymbols,
-                                             becomesStopSymbols,
-                                             minusStopSymbols,
-                                             stopSymbols));
+                                        constantNameStopSymbols,
+                                        becomesStopSymbols,
+                                        minusStopSymbols,
+                                        stopSymbols));
 
         // Expect constant object's name.
         int name = ExpectName(new Set(constantNameStopSymbols,
-                                           becomesStopSymbols,
-                                           minusStopSymbols,
-                                           stopSymbols));
+                                      becomesStopSymbols,
+                                      minusStopSymbols,
+                                      stopSymbols));
 
         // Expect "=".
-        Expect(Symbol.Becomes, new Set(becomesStopSymbols,
-                                            minusStopSymbols,
-                                            stopSymbols));
+        Expect(Symbol.Becomes, new Set(becomesStopSymbols, minusStopSymbols, stopSymbols));
 
         // "-" follows?
         bool minusPrecedes = false;
@@ -614,9 +602,7 @@ public class Parser
         {
             if (metadata.Type != Type.Integer)
             {
-                _annotator.TypeError(
-                    metadata.Type,
-                    TypeErrorCategory.MinusPrecedingNonIntegerInConstantDefinition);
+                _annotator.TypeError(metadata.Type, TypeErrorCategory.MinusPrecedingNonIntegerInConstantDefinition);
                 metadata.Kind = Kind.Undefined;
                 metadata.Type = Type.Universal;
             }
@@ -706,8 +692,7 @@ public class Parser
     private void VariableDefinition(Set stopSymbols)
     {
         // Define stop symbols.
-        Set typeSymbolstopSymbols = new Set(Symbol.Name,
-                                            Symbol.LeftBracket);
+        Set typeSymbolstopSymbols = new Set(Symbol.Name, Symbol.LeftBracket);
 
         // Analyze.
         Type type = TypeSymbol(typeSymbolstopSymbols);
@@ -752,15 +737,15 @@ public class Parser
 
         // Expect "procedure".
         Expect(Symbol.Procedure, new Set(procedureStopSymbols,
-                                              leftBracketStopSymbols,
-                                              typeSymbolStopSymbols,
-                                              returnVariableStopSymbols,
-                                              rightBracketStopSymbols,
-                                              procedureNameStopSymbols,
-                                              leftParanthesisStopSymbols,
-                                              parameterDefinitionStopSymbols,
-                                              rightParanthesisStopSymbols,
-                                              stopSymbols));
+                                         leftBracketStopSymbols,
+                                         typeSymbolStopSymbols,
+                                         returnVariableStopSymbols,
+                                         rightBracketStopSymbols,
+                                         procedureNameStopSymbols,
+                                         leftParanthesisStopSymbols,
+                                         parameterDefinitionStopSymbols,
+                                         rightParanthesisStopSymbols,
+                                         stopSymbols));
 
         // A return type is specified.
         Type type = Type.Void;
@@ -769,49 +754,49 @@ public class Parser
         {
             // Expect "[".
             Expect(Symbol.LeftBracket, new Set(leftBracketStopSymbols,
-                                                    typeSymbolStopSymbols,
-                                                    returnVariableStopSymbols,
-                                                    rightBracketStopSymbols,
-                                                    procedureNameStopSymbols,
-                                                    leftParanthesisStopSymbols,
-                                                    parameterDefinitionStopSymbols,
-                                                    rightParanthesisStopSymbols,
-                                                    stopSymbols));
+                                               typeSymbolStopSymbols,
+                                               returnVariableStopSymbols,
+                                               rightBracketStopSymbols,
+                                               procedureNameStopSymbols,
+                                               leftParanthesisStopSymbols,
+                                               parameterDefinitionStopSymbols,
+                                               rightParanthesisStopSymbols,
+                                               stopSymbols));
 
             // Expect TypeSymbol.
             type = TypeSymbol(new Set(typeSymbolStopSymbols,
-                                           returnVariableStopSymbols,
-                                           rightBracketStopSymbols,
-                                           procedureNameStopSymbols,
-                                           leftParanthesisStopSymbols,
-                                           parameterDefinitionStopSymbols,
-                                           rightParanthesisStopSymbols,
-                                           stopSymbols));
+                                      returnVariableStopSymbols,
+                                      rightBracketStopSymbols,
+                                      procedureNameStopSymbols,
+                                      leftParanthesisStopSymbols,
+                                      parameterDefinitionStopSymbols,
+                                      rightParanthesisStopSymbols,
+                                      stopSymbols));
 
             // Expect return variable name.
             returnVariable = ExpectName(new Set(returnVariableStopSymbols,
-                                                  rightBracketStopSymbols,
-                                                  procedureNameStopSymbols,
-                                                  leftParanthesisStopSymbols,
-                                                  parameterDefinitionStopSymbols,
-                                                  rightParanthesisStopSymbols,
-                                                  stopSymbols));
-
-            // Expect "]".
-            Expect(Symbol.RightBracket, new Set(rightBracketStopSymbols,
-                                                  procedureNameStopSymbols,
-                                                  leftParanthesisStopSymbols,
-                                                  parameterDefinitionStopSymbols,
-                                                  rightParanthesisStopSymbols,
-                                                  stopSymbols));
-        }
-
-        // Expect procedure name.
-        int procedureName = ExpectName(new Set(procedureNameStopSymbols,
+                                                rightBracketStopSymbols,
+                                                procedureNameStopSymbols,
                                                 leftParanthesisStopSymbols,
                                                 parameterDefinitionStopSymbols,
                                                 rightParanthesisStopSymbols,
                                                 stopSymbols));
+
+            // Expect "]".
+            Expect(Symbol.RightBracket, new Set(rightBracketStopSymbols,
+                                                procedureNameStopSymbols,
+                                                leftParanthesisStopSymbols,
+                                                parameterDefinitionStopSymbols,
+                                                rightParanthesisStopSymbols,
+                                                stopSymbols));
+        }
+
+        // Expect procedure name.
+        int procedureName = ExpectName(new Set(procedureNameStopSymbols,
+                                               leftParanthesisStopSymbols,
+                                               parameterDefinitionStopSymbols,
+                                               rightParanthesisStopSymbols,
+                                               stopSymbols));
 
         // Define the procedure name.
         Metadata metaData = new Metadata
@@ -835,9 +820,7 @@ public class Parser
                 Type = type
             };
             ObjectRecord returnVariableObjectRecord = new ObjectRecord();
-            _auditor.Define(returnVariable,
-                                returnVariableMetadata,
-                                ref returnVariableObjectRecord);
+            _auditor.Define(returnVariable, returnVariableMetadata, ref returnVariableObjectRecord);
         }
 
         // Expect "(".
@@ -864,8 +847,7 @@ public class Parser
         objectRecord.ParameterRecordList = parameterRecordList;
 
         // Expect ")".
-        Expect(Symbol.RightParanthesis, new Set(rightParanthesisStopSymbols,
-                                                     stopSymbols));
+        Expect(Symbol.RightParanthesis, new Set(rightParanthesisStopSymbols, stopSymbols));
 
         // Define "end-of-procedure" label.
         int endOfProcedureLabel = _assembler.CurrentAddress + 1;
@@ -896,8 +878,7 @@ public class Parser
         _assembler.EndProcedureBlock(parameterRecordList.Count);
 
         // Resolve "total-variables-in-this-scope" and "end-of-procedure" labels.
-        _assembler.ResolveArgument(variablesLengthLabel,
-                                       totalBlockVariables);
+        _assembler.ResolveArgument(variablesLengthLabel, totalBlockVariables);
         _assembler.ResolveAddress(endOfProcedureLabel);
     }
 
@@ -906,8 +887,7 @@ public class Parser
     /// </summary>
     /// <param name="parameterRecordList">List of parameter records.</param>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
-    private void ParameterDefinition(ref List<ParameterRecord> parameterRecordList,
-                             Set stopSymbols)
+    private void ParameterDefinition(ref List<ParameterRecord> parameterRecordList, Set stopSymbols)
     {
         ParameterRecord parameterRecord = new ParameterRecord();
         parameterRecordList = [];
@@ -928,10 +908,10 @@ public class Parser
         if (IsCurrentSymbol(Symbol.Reference))
         {
             Expect(Symbol.Reference, new Set(referenceStopSymbols,
-                                                  parameterNameStopSymbols,
-                                                  typeSymbolStopSymbols,
-                                                  commaStopSymbols,
-                                                  stopSymbols));
+                                             parameterNameStopSymbols,
+                                             typeSymbolStopSymbols,
+                                             commaStopSymbols,
+                                             stopSymbols));
             parameterRecord.ParameterKind = Kind.ReferenceParameter;
         }
         else
@@ -950,8 +930,7 @@ public class Parser
         parameterRecordList.Add(parameterRecord);
 
         // Expect parameter name.
-        int parameter = ExpectName(new Set(parameterNameStopSymbols,
-                                                stopSymbols));
+        int parameter = ExpectName(new Set(parameterNameStopSymbols, stopSymbols));
         parameterList.Add(parameter);
 
         // "," follows?
@@ -992,8 +971,7 @@ public class Parser
             parameterRecordList.Add(parameterRecord);
 
             // Expect parameter name.
-            parameter = ExpectName(new Set(parameterNameStopSymbols,
-                                                stopSymbols));
+            parameter = ExpectName(new Set(parameterNameStopSymbols, stopSymbols));
             parameterList.Add(parameter);
         }
 
@@ -1079,27 +1057,25 @@ public class Parser
 
         // Expect "[".
         Expect(Symbol.LeftBracket, new Set(leftBracketStopSymbols,
-                                                constantStopSymbols,
-                                                rightBracketStopSymbols,
-                                                stopSymbols));
+                                           constantStopSymbols,
+                                           rightBracketStopSymbols,
+                                           stopSymbols));
 
         // Find the metadata of the constant that defines the bound of the array.
         Metadata arrayBoundMetadata = new Metadata();
         Constant(ref arrayBoundMetadata, new Set(constantStopSymbols,
-                                                      rightBracketStopSymbols,
-                                                      stopSymbols));
+                                                 rightBracketStopSymbols,
+                                                 stopSymbols));
 
         // The bound of the array has to be of type integer.
         if (arrayBoundMetadata.Type != Type.Integer)
         {
-            _annotator.TypeError(
-                              arrayBoundMetadata.Type,
-                              TypeErrorCategory.NonIntegerIndexInArrayDeclaration);
+            _annotator.TypeError(arrayBoundMetadata.Type,
+                                 TypeErrorCategory.NonIntegerIndexInArrayDeclaration);
         }
 
         // Expect "]".
-        Expect(Symbol.RightBracket, new Set(rightBracketStopSymbols,
-                                                 stopSymbols));
+        Expect(Symbol.RightBracket, new Set(rightBracketStopSymbols, stopSymbols));
 
         // Set the metadata of the array object.
         Metadata metadata = new Metadata
@@ -1110,13 +1086,10 @@ public class Parser
         };
 
         // The bound of the array has to be a positive integer.
-        if ((metadata.UpperBound <= 0) &&
-            (metadata.Type == Type.Integer)) /* if not an integer, it would be 
-                                    caught in the type checking above. */
+        // if not an integer, it would be caught in the type checking above.
+        if ((metadata.UpperBound <= 0) && (metadata.Type == Type.Integer))
         {
-            _annotator.KindError(
-                      Kind.Variable,
-                      KindErrorCategory.NonPositiveIntegerIndexInArrayDeclaration);
+            _annotator.KindError(Kind.Variable, KindErrorCategory.NonPositiveIntegerIndexInArrayDeclaration);
         }
 
         // Expect VariableList.
@@ -1135,9 +1108,7 @@ public class Parser
         Set commaStopSymbols = new Set(Symbol.Name);
 
         // Read the object name, and define it.
-        int name = ExpectName(new Set(variableNameStopSymbols,
-                                           commaStopSymbols,
-                                           stopSymbols));
+        int name = ExpectName(new Set(variableNameStopSymbols, commaStopSymbols, stopSymbols));
         ObjectRecord objectRecord = new ObjectRecord();
         _auditor.Define(name, metadata, ref objectRecord);
 
@@ -1145,14 +1116,10 @@ public class Parser
         while (IsCurrentSymbol(Symbol.Comma))
         {
             // Expect ",".
-            Expect(Symbol.Comma, new Set(commaStopSymbols,
-                                              variableNameStopSymbols,
-                                              stopSymbols));
+            Expect(Symbol.Comma, new Set(commaStopSymbols, variableNameStopSymbols, stopSymbols));
 
             // Read the object name, and define it.
-            name = ExpectName(new Set(variableNameStopSymbols,
-                                           commaStopSymbols,
-                                           stopSymbols));
+            name = ExpectName(new Set(variableNameStopSymbols, commaStopSymbols, stopSymbols));
             ObjectRecord newObjectRecord = new ObjectRecord();
             _auditor.Define(name, metadata, ref newObjectRecord);
         }
@@ -1182,8 +1149,7 @@ public class Parser
             // Read statement should not be applied on a constant.
             if (metadata.Kind == Kind.Constant)
             {
-                _annotator.KindError(Kind.Constant,
-                                         KindErrorCategory.ReadModifiesConstant);
+                _annotator.KindError(Kind.Constant, KindErrorCategory.ReadModifiesConstant);
             }
 
             // Assemble code.
@@ -1197,25 +1163,19 @@ public class Parser
             }
             else
             {
-                _annotator.TypeError(
-                                   metadata.Type,
-                                   TypeErrorCategory.InvalidTypeInReadStatement);
+                _annotator.TypeError(metadata.Type, TypeErrorCategory.InvalidTypeInReadStatement);
             }
         }
         else if (operation == OperationCategory.Randomize)
         {
             if (metadata.Type != Type.Integer)
             {
-                _annotator.TypeError(
-                                  metadata.Type,
-                                  TypeErrorCategory.NonIntegerInRandomizeStatement);
+                _annotator.TypeError(metadata.Type, TypeErrorCategory.NonIntegerInRandomizeStatement);
             }
 
             if (metadata.Kind == Kind.Constant)
             {
-                _annotator.KindError(
-                                   Kind.Constant,
-                                   KindErrorCategory.RandomizeModifiesConstant);
+                _annotator.KindError(Kind.Constant, KindErrorCategory.RandomizeModifiesConstant);
             }
 
             // Assemble code.
@@ -1225,9 +1185,7 @@ public class Parser
         {
             if (metadata.Type != Type.Channel)
             {
-                _annotator.TypeError(
-                                    metadata.Type,
-                                    TypeErrorCategory.NonChannelInOpenStatement);
+                _annotator.TypeError(metadata.Type, TypeErrorCategory.NonChannelInOpenStatement);
             }
 
             // Assemble code.
@@ -1238,21 +1196,17 @@ public class Parser
         while (IsCurrentSymbol(Symbol.Comma))
         {
             // Expect ",".
-            Expect(Symbol.Comma, new Set(commaStopSymbols,
-                                              objectAccessStopSymbols,
-                                              stopSymbols));
+            Expect(Symbol.Comma, new Set(commaStopSymbols, objectAccessStopSymbols, stopSymbols));
 
             // Expect ObjectAccess.
-            metadata =
-              ObjectAccess(new Set(objectAccessStopSymbols, stopSymbols));
+            metadata = ObjectAccess(new Set(objectAccessStopSymbols, stopSymbols));
 
             if (operation == OperationCategory.Read)
             {
                 // Read statement should not be applied on a constant.
                 if (metadata.Kind == Kind.Constant)
                 {
-                    _annotator.KindError(Kind.Constant,
-                                             KindErrorCategory.ReadModifiesConstant);
+                    _annotator.KindError(Kind.Constant, KindErrorCategory.ReadModifiesConstant);
                 }
 
                 // Assemble code.
@@ -1266,25 +1220,19 @@ public class Parser
                 }
                 else
                 {
-                    _annotator.TypeError(
-                                       metadata.Type,
-                                       TypeErrorCategory.InvalidTypeInReadStatement);
+                    _annotator.TypeError(metadata.Type, TypeErrorCategory.InvalidTypeInReadStatement);
                 }
             }
             else if (operation == OperationCategory.Randomize)
             {
                 if (metadata.Type != Type.Integer)
                 {
-                    _annotator.TypeError(
-                                    metadata.Type,
-                                    TypeErrorCategory.NonIntegerInRandomizeStatement);
+                    _annotator.TypeError(metadata.Type, TypeErrorCategory.NonIntegerInRandomizeStatement);
                 }
 
                 if (metadata.Kind == Kind.Constant)
                 {
-                    _annotator.KindError(
-                                     Kind.Constant,
-                                     KindErrorCategory.RandomizeModifiesConstant);
+                    _annotator.KindError(Kind.Constant, KindErrorCategory.RandomizeModifiesConstant);
                 }
 
                 // Assemble code.
@@ -1294,9 +1242,7 @@ public class Parser
             {
                 if (metadata.Type != Type.Channel)
                 {
-                    _annotator.TypeError(
-                                        metadata.Type,
-                                        TypeErrorCategory.NonChannelInOpenStatement);
+                    _annotator.TypeError(metadata.Type, TypeErrorCategory.NonChannelInOpenStatement);
                 }
 
                 // Assemble code.
@@ -1328,29 +1274,22 @@ public class Parser
             int procedureName = _procedureNest.Peek();
             ObjectRecord procedureRecord = new ObjectRecord();
             _auditor.Find(procedureName, ref procedureRecord);
-            if ((procedureRecord.ProcedureRecord.HighestScopeUsed ==
-                                                      ProcedureRecord.NoScope) ||
-                (procedureRecord.ProcedureRecord.HighestScopeUsed >
-                                                      objectRecord.MetaData.Level))
+            if ((procedureRecord.ProcedureRecord.HighestScopeUsed == ProcedureRecord.NoScope) ||
+                (procedureRecord.ProcedureRecord.HighestScopeUsed > objectRecord.MetaData.Level))
             {
-                procedureRecord.ProcedureRecord.HighestScopeUsed =
-                                                        objectRecord.MetaData.Level;
+                procedureRecord.ProcedureRecord.HighestScopeUsed = objectRecord.MetaData.Level;
             }
         }
 
         if (objectRecord.MetaData.Kind == Kind.Procedure)
         {
-            _annotator.KindError(
-                            Kind.Procedure,
-                            KindErrorCategory.ProcedureAccessedAsObject);
+            _annotator.KindError(Kind.Procedure, KindErrorCategory.ProcedureAccessedAsObject);
         }
         else if (objectRecord.MetaData.Kind == Kind.Array)
         {
             if (!IsCurrentSymbol(Symbol.LeftBracket))
             {
-                _annotator.KindError(
-                              Kind.Array,
-                              KindErrorCategory.ArrayVariableMissingIndexedSelector);
+                _annotator.KindError(Kind.Array, KindErrorCategory.ArrayVariableMissingIndexedSelector);
             }
             else
             {
@@ -1399,9 +1338,7 @@ public class Parser
         Set expressionStopSymbols = new Set(Symbol.RightBracket);
 
         // Expect "[".
-        Expect(Symbol.LeftBracket, new Set(leftBracketStopSymbols,
-                                                expressionStopSymbols,
-                                                stopSymbols));
+        Expect(Symbol.LeftBracket, new Set(leftBracketStopSymbols, expressionStopSymbols, stopSymbols));
 
         // Expect Expression.
         Type type = Expression(new Set(expressionStopSymbols, stopSymbols));
@@ -1650,23 +1587,15 @@ public class Parser
                                       Symbol.LeftParanthesis);
 
         // Expect "send".
-        Expect(Symbol.Send, new Set(sendStopSymbols,
-                                         expressionStopSymbols,
-                                         throughStopSymbols,
-                                         stopSymbols));
+        Expect(Symbol.Send, new Set(sendStopSymbols, expressionStopSymbols, throughStopSymbols, stopSymbols));
 
         // Expect Expression.
-        Type integerExpressionType = Expression(new Set(
-                                                          expressionStopSymbols,
-                                                          throughStopSymbols,
-                                                          stopSymbols));
+        Type integerExpressionType = Expression(new Set(expressionStopSymbols, throughStopSymbols, stopSymbols));
 
         // Expression should be of type integer.
         if (integerExpressionType != Type.Integer)
         {
-            _annotator.TypeError(
-                                integerExpressionType,
-                                TypeErrorCategory.NonIntegerValueInSendStatement);
+            _annotator.TypeError(integerExpressionType, TypeErrorCategory.NonIntegerValueInSendStatement);
         }
 
         // Expect "->".
@@ -1678,8 +1607,7 @@ public class Parser
         // Object should be of type channel.
         if (channelType != Type.Channel)
         {
-            _annotator.TypeError(channelType,
-                                     TypeErrorCategory.NonChannelInSendStatement);
+            _annotator.TypeError(channelType, TypeErrorCategory.NonChannelInSendStatement);
         }
 
         // Assemble code for send.
@@ -1705,29 +1633,25 @@ public class Parser
 
         // Expect "receive".
         Expect(Symbol.Receive, new Set(receiveStopSymbols,
-                                            integerVariableStopSymbols,
-                                            throughStopSymbols,
-                                            stopSymbols));
+                                       integerVariableStopSymbols,
+                                       throughStopSymbols,
+                                       stopSymbols));
 
         // Expect ObjectAccess.
-        Metadata integerVariableMetadata = ObjectAccess(
-                                        new Set(integerVariableStopSymbols,
-                                                throughStopSymbols,
-                                                stopSymbols));
+        Metadata integerVariableMetadata = ObjectAccess(new Set(integerVariableStopSymbols,
+                                                                throughStopSymbols,
+                                                                stopSymbols));
 
         // Object should be of type integer.
         if (integerVariableMetadata.Type != Type.Integer)
         {
-            _annotator.TypeError(
-                             integerVariableMetadata.Type,
-                             TypeErrorCategory.NonIntegerValueInReceiveStatement);
+            _annotator.TypeError(integerVariableMetadata.Type, TypeErrorCategory.NonIntegerValueInReceiveStatement);
         }
 
         // Object should be not of kind constant.
         if (integerVariableMetadata.Kind == Kind.Constant)
         {
-            _annotator.KindError(Kind.Constant,
-                                     KindErrorCategory.ReceiveModifiesConstant);
+            _annotator.KindError(Kind.Constant, KindErrorCategory.ReceiveModifiesConstant);
         }
 
         // Expect "->".
@@ -1739,9 +1663,7 @@ public class Parser
         // Object should be of type channel.
         if (channelType != Type.Channel)
         {
-            _annotator.TypeError(
-                                  channelType,
-                                  TypeErrorCategory.NonChannelInReceiveStatement);
+            _annotator.TypeError(channelType, TypeErrorCategory.NonChannelInReceiveStatement);
         }
 
         // Assemble code for receive.
@@ -1768,13 +1690,10 @@ public class Parser
             // Has non-void return?
             if (objectRecord.MetaData.Type != Type.Void)
             {
-                _annotator.KindError(
-                              Kind.Procedure,
-                              KindErrorCategory.ParallelProcedureHasNonVoidReturn);
+                _annotator.KindError(Kind.Procedure, KindErrorCategory.ParallelProcedureHasNonVoidReturn);
             }
 
-            List<ParameterRecord> parameterRecordList =
-                                                objectRecord.ParameterRecordList;
+            List<ParameterRecord> parameterRecordList = objectRecord.ParameterRecordList;
             bool hasReferenceParameter = false;
             bool hasChannelParameter = false;
             foreach (ParameterRecord parameterRecord in parameterRecordList)
@@ -1793,51 +1712,38 @@ public class Parser
             // Has reference parameter?
             if (hasReferenceParameter)
             {
-                _annotator.KindError(
-                          Kind.Procedure,
-                          KindErrorCategory.ParallelProcedureHasReferenceParameter);
+                _annotator.KindError(Kind.Procedure, KindErrorCategory.ParallelProcedureHasReferenceParameter);
             }
 
             // Has no channel parameter?
             if (!hasChannelParameter)
             {
-                _annotator.KindError(
-                          Kind.Procedure,
-                          KindErrorCategory.ParallelProcedureHasNoChannelParameter);
+                _annotator.KindError(Kind.Procedure, KindErrorCategory.ParallelProcedureHasNoChannelParameter);
             }
 
             // Uses I/O statements?
             if (objectRecord.ProcedureRecord.UsesIO)
             {
-                _annotator.KindError(Kind.Procedure,
-                                         KindErrorCategory.ParallelProcedureUsesIO);
+                _annotator.KindError(Kind.Procedure, KindErrorCategory.ParallelProcedureUsesIO);
             }
 
             // Uses non local variables?
-            if ((objectRecord.ProcedureRecord.HighestScopeUsed !=
-                                                    ProcedureRecord.NoScope) &&
-                (objectRecord.ProcedureRecord.HighestScopeUsed <=
-                                                    objectRecord.MetaData.Level))
+            if ((objectRecord.ProcedureRecord.HighestScopeUsed != ProcedureRecord.NoScope) &&
+                (objectRecord.ProcedureRecord.HighestScopeUsed <= objectRecord.MetaData.Level))
             {
-                _annotator.KindError(
-                                Kind.Procedure,
-                                KindErrorCategory.ParallelProcedureUsesNonLocals);
+                _annotator.KindError(Kind.Procedure, KindErrorCategory.ParallelProcedureUsesNonLocals);
             }
 
             // Calls parallel unfriendly procedures?
             if (objectRecord.ProcedureRecord.CallsParallelUnfriendly)
             {
-                _annotator.KindError(
-                                Kind.Procedure,
-                                KindErrorCategory.ParallelProcedureCallsUnfriendly);
+                _annotator.KindError(Kind.Procedure, KindErrorCategory.ParallelProcedureCallsUnfriendly);
             }
         }
         else
         {
             // "parallel" keyword is not followed by procedure invocation.
-            _annotator.KindError(
-                      objectRecord.MetaData.Kind,
-                      KindErrorCategory.NonProcedureInParallelStatement);
+            _annotator.KindError(objectRecord.MetaData.Kind, KindErrorCategory.NonProcedureInParallelStatement);
         }
 
         // Procedure invocation.
@@ -1845,8 +1751,7 @@ public class Parser
     }
 
     /// <summary>
-    /// AssignmentStatement = ObjectAccess [, ObjectAccess] "=" 
-    ///                        Expression [, Expression]
+    /// AssignmentStatement = ObjectAccess [, ObjectAccess] "=" Expression [, Expression]
     /// </summary>
     /// <param name="stopSymbols">Stop symbols for error recovery.</param>
     private void AssignmentStatement(Set stopSymbols)
@@ -1867,20 +1772,17 @@ public class Parser
         List<Type> leftHandSideTypes = [];
 
         // Expect ObjectAccess.
-        Metadata metadata = ObjectAccess(
-                                        new Set(objectAccessStopSymbols,
-                                                becomesStopSymbols,
-                                                expressionStopSymbols,
-                                                expressionCommaStopSymbols,
-                                                stopSymbols));
+        Metadata metadata = ObjectAccess(new Set(objectAccessStopSymbols,
+                                                 becomesStopSymbols,
+                                                 expressionStopSymbols,
+                                                 expressionCommaStopSymbols,
+                                                 stopSymbols));
         leftHandSideTypes.Add(metadata.Type);
 
         // Left hand side of the assignment statement should not be a constant.
         if (metadata.Kind == Kind.Constant)
         {
-            _annotator.KindError(
-                            metadata.Kind,
-                            KindErrorCategory.AssignmentModifiesConstant);
+            _annotator.KindError(metadata.Kind, KindErrorCategory.AssignmentModifiesConstant);
         }
 
         // "," follows?
@@ -1888,40 +1790,37 @@ public class Parser
         {
             // Expect ",".
             Expect(Symbol.Comma, new Set(objectAccessCommaStopSymbols,
-                                              objectAccessStopSymbols,
-                                              becomesStopSymbols,
-                                              expressionStopSymbols,
-                                              expressionCommaStopSymbols,
-                                              stopSymbols));
+                                         objectAccessStopSymbols,
+                                         becomesStopSymbols,
+                                         expressionStopSymbols,
+                                         expressionCommaStopSymbols,
+                                         stopSymbols));
 
             // Expect ObjectAccess.
             metadata = ObjectAccess(new Set(objectAccessStopSymbols,
-                                                 becomesStopSymbols,
-                                                 expressionStopSymbols,
-                                                 expressionCommaStopSymbols,
-                                                 stopSymbols));
+                                            becomesStopSymbols,
+                                            expressionStopSymbols,
+                                            expressionCommaStopSymbols,
+                                            stopSymbols));
             leftHandSideTypes.Add(metadata.Type);
 
             // Left hand side of the assignment statement should not be a constant.
             if (metadata.Kind == Kind.Constant)
             {
-                _annotator.KindError(
-                                metadata.Kind,
-                                KindErrorCategory.AssignmentModifiesConstant);
+                _annotator.KindError(metadata.Kind, KindErrorCategory.AssignmentModifiesConstant);
             }
         }
 
         // Expect "="
         Expect(Symbol.Becomes, new Set(becomesStopSymbols,
-                                            expressionStopSymbols,
-                                            expressionCommaStopSymbols,
-                                            stopSymbols));
+                                       expressionStopSymbols,
+                                       expressionCommaStopSymbols,
+                                       stopSymbols));
 
         List<Type> rightHandSideTypes = [];
 
         // Expect Expression.
-        Type rightHandSideType = Expression(new Set(expressionStopSymbols,
-                                                         stopSymbols));
+        Type rightHandSideType = Expression(new Set(expressionStopSymbols, stopSymbols));
         rightHandSideTypes.Add(rightHandSideType);
 
         // "," follows?
@@ -1929,20 +1828,18 @@ public class Parser
         {
             // Expect ",".
             Expect(Symbol.Comma, new Set(expressionCommaStopSymbols,
-                                              expressionStopSymbols,
-                                              stopSymbols));
+                                         expressionStopSymbols,
+                                         stopSymbols));
 
             // Expect Expression.
-            rightHandSideType = Expression(new Set(expressionStopSymbols,
-                                                        stopSymbols));
+            rightHandSideType = Expression(new Set(expressionStopSymbols, stopSymbols));
             rightHandSideTypes.Add(rightHandSideType);
         }
 
         int total = leftHandSideTypes.Count;
         if (total != rightHandSideTypes.Count)
         {
-            _annotator.KindError(Kind.Variable,
-                                     KindErrorCategory.AssignmentCountMismatch);
+            _annotator.KindError(Kind.Variable, KindErrorCategory.AssignmentCountMismatch);
         }
         else
         {
@@ -1952,9 +1849,7 @@ public class Parser
                 if ((leftHandSideTypes[count] != rightHandSideTypes[count]) &&
                     (rightHandSideTypes[count] != Type.Universal))
                 {
-                    _annotator.TypeError(
-                                        leftHandSideTypes[count],
-                                        TypeErrorCategory.TypeMismatchInAssignment);
+                    _annotator.TypeError(leftHandSideTypes[count], TypeErrorCategory.TypeMismatchInAssignment);
                 }
             }
         }
@@ -1985,36 +1880,35 @@ public class Parser
 
         // Expect "if".
         Expect(Symbol.If, new Set(ifStopSymbols,
-                                       leftParanthesisStopSymbols,
-                                       expressionStopSymbols,
+                                  leftParanthesisStopSymbols,
+                                  expressionStopSymbols,
+                                  rightParanthesisStopSymbols,
+                                  blockStopSymbols,
+                                  stopSymbols));
+
+        // Expect "(".
+        Expect(Symbol.LeftParanthesis, new Set(leftParanthesisStopSymbols,
+                                               expressionStopSymbols,
+                                               rightParanthesisStopSymbols,
+                                               blockStopSymbols,
+                                               stopSymbols));
+
+        // Expect Expression.
+        Type type = Expression(new Set(expressionStopSymbols,
                                        rightParanthesisStopSymbols,
                                        blockStopSymbols,
                                        stopSymbols));
 
-        // Expect "(".
-        Expect(Symbol.LeftParanthesis, new Set(leftParanthesisStopSymbols,
-                                                    expressionStopSymbols,
-                                                    rightParanthesisStopSymbols,
-                                                    blockStopSymbols,
-                                                    stopSymbols));
-
-        // Expect Expression.
-        Type type = Expression(new Set(expressionStopSymbols,
-                                            rightParanthesisStopSymbols,
-                                            blockStopSymbols,
-                                            stopSymbols));
-
         // Make sure the expression would evaluate to a boolean value.
         if (type != Type.Boolean)
         {
-            _annotator.TypeError(type,
-                                     TypeErrorCategory.NonBooleanInIfCondition);
+            _annotator.TypeError(type, TypeErrorCategory.NonBooleanInIfCondition);
         }
 
         // Expect ")".
         Expect(Symbol.RightParanthesis, new Set(rightParanthesisStopSymbols,
-                                                     blockStopSymbols,
-                                                     stopSymbols));
+                                                blockStopSymbols,
+                                                stopSymbols));
 
         // Assemble code.
         int ifBlockEndLabel = _assembler.CurrentAddress + 1;
@@ -2030,8 +1924,7 @@ public class Parser
             Set elseStopSymbols = new Set(Symbol.Begin);
 
             // Expect "else".
-            Expect(Symbol.Else, new Set(elseStopSymbols,
-                                             stopSymbols));
+            Expect(Symbol.Else, new Set(elseStopSymbols, stopSymbols));
 
             // Assemble code.
             int elseBlockEndLabel = _assembler.CurrentAddress + 1;
@@ -2077,32 +1970,30 @@ public class Parser
 
         // Expect "while"
         Expect(Symbol.While, new Set(whileStopSymbols,
-                                          leftParanthesisStopSymbols,
-                                          expressionStopSymbols,
-                                          rightParanthesisStopSymbols,
-                                          stopSymbols));
+                                     leftParanthesisStopSymbols,
+                                     expressionStopSymbols,
+                                     rightParanthesisStopSymbols,
+                                     stopSymbols));
 
         // Expect "(".
         Expect(Symbol.LeftParanthesis, new Set(leftParanthesisStopSymbols,
-                                                    expressionStopSymbols,
-                                                    rightParanthesisStopSymbols,
-                                                    stopSymbols));
+                                               expressionStopSymbols,
+                                               rightParanthesisStopSymbols,
+                                               stopSymbols));
 
         // Expect Expression.
         Type type = Expression(new Set(expressionStopSymbols,
-                                            rightParanthesisStopSymbols,
-                                            stopSymbols));
+                                       rightParanthesisStopSymbols,
+                                       stopSymbols));
 
         // Make sure the expression would evaluate to a boolean value.
         if (type != Type.Boolean)
         {
-            _annotator.TypeError(type,
-                                     TypeErrorCategory.NonBooleanInWhileCondition);
+            _annotator.TypeError(type, TypeErrorCategory.NonBooleanInWhileCondition);
         }
 
         // Expect ")".
-        Expect(Symbol.RightParanthesis, new Set(rightParanthesisStopSymbols,
-                                                     stopSymbols));
+        Expect(Symbol.RightParanthesis, new Set(rightParanthesisStopSymbols, stopSymbols));
 
         // Assemble code.
         int whileBlockEndLabel = _assembler.CurrentAddress + 1;
@@ -2291,16 +2182,15 @@ public class Parser
                                        Symbol.LeftParanthesis,
                                        Symbol.Reference);
         Set referenceStopSymbols = new Set(Symbol.Name);
-        Set leftParanthesisStopSymbols = new Set(commaStopSymbols,
-                                                 Symbol.RightParanthesis);
+        Set leftParanthesisStopSymbols = new Set(commaStopSymbols, Symbol.RightParanthesis);
         Set procedureNameStopSymbols = new Set(Symbol.LeftParanthesis);
 
         // Expect procedure name.
         int name = ExpectName(new Set(procedureNameStopSymbols,
-                                           leftParanthesisStopSymbols,
-                                           referenceStopSymbols,
-                                           commaStopSymbols,
-                                           stopSymbols));
+                                      leftParanthesisStopSymbols,
+                                      referenceStopSymbols,
+                                      commaStopSymbols,
+                                      stopSymbols));
 
         // Find the procedure name.
         ObjectRecord objectRecord = new ObjectRecord();
@@ -2315,12 +2205,10 @@ public class Parser
             if (!procedureRecord.ProcedureRecord.CallsParallelUnfriendly)
             {
                 procedureRecord.ProcedureRecord.CallsParallelUnfriendly =
-                  ((objectRecord.ProcedureRecord.HighestScopeUsed !=
-                                ProcedureRecord.NoScope) &&
-                   (objectRecord.ProcedureRecord.HighestScopeUsed <=
-                                procedureRecord.MetaData.Level)) ||
-                          objectRecord.ProcedureRecord.UsesIO ||
-                          objectRecord.ProcedureRecord.CallsParallelUnfriendly;
+                  ((objectRecord.ProcedureRecord.HighestScopeUsed != ProcedureRecord.NoScope) &&
+                   (objectRecord.ProcedureRecord.HighestScopeUsed <= procedureRecord.MetaData.Level)) ||
+                   objectRecord.ProcedureRecord.UsesIO ||
+                   objectRecord.ProcedureRecord.CallsParallelUnfriendly;
             }
         }
 
@@ -2329,39 +2217,33 @@ public class Parser
 
         // Expect "(".
         Expect(Symbol.LeftParanthesis, new Set(leftParanthesisStopSymbols,
-                                                    referenceStopSymbols,
-                                                    stopSymbols));
+                                               referenceStopSymbols,
+                                               stopSymbols));
 
         if (!IsCurrentSymbol(Symbol.RightParanthesis))
         {
             ParameterRecord argumentRecord = new ParameterRecord();
 
             // Define stop symbols.
-            Set expressionStopSymbols = new Set(Symbol.Comma,
-                                                Symbol.RightParanthesis);
-            Set objectAccessStopSymbols = new Set(Symbol.Comma,
-                                                  Symbol.RightParanthesis);
+            Set expressionStopSymbols = new Set(Symbol.Comma, Symbol.RightParanthesis);
+            Set objectAccessStopSymbols = new Set(Symbol.Comma, Symbol.RightParanthesis);
 
             // "reference" follows?
             if (IsCurrentSymbol(Symbol.Reference))
             {
                 // Expect "reference".
                 Expect(Symbol.Reference, new Set(referenceStopSymbols,
-                                                      objectAccessStopSymbols,
-                                                      commaStopSymbols,
-                                                      stopSymbols));
+                                                 objectAccessStopSymbols,
+                                                 commaStopSymbols,
+                                                 stopSymbols));
 
                 // Expect ObjectAccess.
-                Metadata metadata = ObjectAccess(
-                                                  new Set(objectAccessStopSymbols,
-                                                          stopSymbols));
+                Metadata metadata = ObjectAccess(new Set(objectAccessStopSymbols, stopSymbols));
 
                 // Make sure a constant is not passed in as a reference parameter.
                 if (metadata.Kind == Kind.Constant)
                 {
-                    _annotator.KindError(
-                          Kind.Constant,
-                          KindErrorCategory.ConstantPassedAsReferenceParameter);
+                    _annotator.KindError(Kind.Constant, KindErrorCategory.ConstantPassedAsReferenceParameter);
                 }
 
                 argumentRecord.ParameterType = metadata.Type;
@@ -2370,9 +2252,7 @@ public class Parser
             else
             {
                 // Expect Expression.
-                argumentRecord.ParameterType = Expression(
-                                                      new Set(expressionStopSymbols,
-                                                              stopSymbols));
+                argumentRecord.ParameterType = Expression(new Set(expressionStopSymbols, stopSymbols));
                 argumentRecord.ParameterKind = Kind.ValueParameter;
             }
 
@@ -2383,9 +2263,7 @@ public class Parser
             while (IsCurrentSymbol(Symbol.Comma))
             {
                 // Expect ",".
-                Expect(Symbol.Comma, new Set(commaStopSymbols,
-                                                  expressionStopSymbols,
-                                                  stopSymbols));
+                Expect(Symbol.Comma, new Set(commaStopSymbols, expressionStopSymbols, stopSymbols));
 
                 argumentRecord = new ParameterRecord();
 
@@ -2394,21 +2272,17 @@ public class Parser
                 {
                     // Expect "reference".
                     Expect(Symbol.Reference, new Set(referenceStopSymbols,
-                                                          objectAccessStopSymbols,
-                                                          commaStopSymbols,
-                                                          stopSymbols));
+                                                     objectAccessStopSymbols,
+                                                     commaStopSymbols,
+                                                     stopSymbols));
 
                     // Expect ObjectAccess.
-                    Metadata metadata = ObjectAccess(
-                                                      new Set(objectAccessStopSymbols,
-                                                              stopSymbols));
+                    Metadata metadata = ObjectAccess(new Set(objectAccessStopSymbols, stopSymbols));
 
                     // Make sure a constant is not passed in as a reference parameter.
                     if (metadata.Kind == Kind.Constant)
                     {
-                        _annotator.KindError(
-                            Kind.Constant,
-                            KindErrorCategory.ConstantPassedAsReferenceParameter);
+                        _annotator.KindError(Kind.Constant, KindErrorCategory.ConstantPassedAsReferenceParameter);
                     }
 
                     argumentRecord.ParameterType = metadata.Type;
@@ -2417,9 +2291,7 @@ public class Parser
                 else
                 {
                     // Expect Expression.
-                    argumentRecord.ParameterType = Expression(
-                                                        new Set(expressionStopSymbols,
-                                                                stopSymbols));
+                    argumentRecord.ParameterType = Expression(new Set(expressionStopSymbols, stopSymbols));
                     argumentRecord.ParameterKind = Kind.ValueParameter;
                 }
 
@@ -2432,30 +2304,24 @@ public class Parser
         Expect(Symbol.RightParanthesis, stopSymbols);
 
         // Check if the procedure invocation statement matches its signature.
-        List<ParameterRecord> parameterRecordList =
-                                                objectRecord.ParameterRecordList;
+        List<ParameterRecord> parameterRecordList = objectRecord.ParameterRecordList;
         int totalParameters = parameterRecordList.Count;
         if (argumentRecordList.Count != totalParameters)
         {
-            _annotator.KindError(Kind.Procedure,
-                                     KindErrorCategory.ArgumentCountMismatch);
+            _annotator.KindError(Kind.Procedure, KindErrorCategory.ArgumentCountMismatch);
         }
         else
         {
             for (int count = 0; count < totalParameters; ++count)
             {
-                if (parameterRecordList[count].ParameterKind !=
-                    argumentRecordList[count].ParameterKind)
+                if (parameterRecordList[count].ParameterKind != argumentRecordList[count].ParameterKind)
                 {
-                    _annotator.KindError(argumentRecordList[count].ParameterKind,
-                                             KindErrorCategory.ParameterKindMismatch);
+                    _annotator.KindError(argumentRecordList[count].ParameterKind, KindErrorCategory.ParameterKindMismatch);
                 }
 
-                if (parameterRecordList[count].ParameterType !=
-                    argumentRecordList[count].ParameterType)
+                if (parameterRecordList[count].ParameterType != argumentRecordList[count].ParameterType)
                 {
-                    _annotator.TypeError(argumentRecordList[count].ParameterType,
-                                             TypeErrorCategory.ParameterTypeMismatch);
+                    _annotator.TypeError(argumentRecordList[count].ParameterType, TypeErrorCategory.ParameterTypeMismatch);
                 }
             }
         }
@@ -2466,9 +2332,8 @@ public class Parser
             _assembler.Parallel();
         }
 
-        _assembler.ProcedureInvocation(
-                          _auditor.BlockLevel - objectRecord.MetaData.Level,
-                          objectRecord.MetaData.ProcedureLabel);
+        _assembler.ProcedureInvocation(_auditor.BlockLevel - objectRecord.MetaData.Level,
+                                       objectRecord.MetaData.ProcedureLabel);
 
         return objectRecord.MetaData.Type;
     }
@@ -2506,9 +2371,7 @@ public class Parser
             }
             else
             {
-                _annotator.TypeError(
-                                  type,
-                                  TypeErrorCategory.InvalidTypeInWriteStatement);
+                _annotator.TypeError(type, TypeErrorCategory.InvalidTypeInWriteStatement);
             }
         }
 
@@ -2516,9 +2379,7 @@ public class Parser
         while (IsCurrentSymbol(Symbol.Comma))
         {
             // Expect ",".
-            Expect(Symbol.Comma, new Set(commaStopSymbols,
-                                              expressionStopSymbols,
-                                              stopSymbols));
+            Expect(Symbol.Comma, new Set(commaStopSymbols, expressionStopSymbols, stopSymbols));
 
             // Expect Expression.
             type = Expression(new Set(expressionStopSymbols, stopSymbols));
@@ -2536,9 +2397,7 @@ public class Parser
                 }
                 else
                 {
-                    _annotator.TypeError(
-                                      type,
-                                      TypeErrorCategory.InvalidTypeInWriteStatement);
+                    _annotator.TypeError(type, TypeErrorCategory.InvalidTypeInWriteStatement);
                 }
             }
         }
@@ -2565,8 +2424,7 @@ public class Parser
                                                  Symbol.LeftParanthesis);
 
         // Expect PrimaryExpression.
-        Type type = PrimaryExpression(new Set(primaryExpressionStopSymbols,
-                                                   stopSymbols));
+        Type type = PrimaryExpression(new Set(primaryExpressionStopSymbols, stopSymbols));
 
         // Primary operator follows?
         if (primaryOperatorSymbols.Contains(CurrentSymbol))
@@ -2574,10 +2432,7 @@ public class Parser
             // Make sure the PrimaryExpression evaluates to type Boolean.
             if (type != Type.Boolean)
             {
-                _annotator.TypeError(
-                          type,
-                          DiadicTypeErrorCategory.NonBooleanLeftOfLogicalOperator,
-                          CurrentSymbol);
+                _annotator.TypeError(type, DiadicTypeErrorCategory.NonBooleanLeftOfLogicalOperator, CurrentSymbol);
             }
         }
 
@@ -2587,21 +2442,17 @@ public class Parser
             Symbol lastPrimaryOperator = CurrentSymbol;
 
             // Expect PrimaryOperator.
-            PrimaryOperator(new Set(primaryOperatorStopSymbols,
-                                         primaryExpressionStopSymbols,
-                                         stopSymbols));
+            PrimaryOperator(new Set(primaryOperatorStopSymbols, primaryExpressionStopSymbols, stopSymbols));
 
             // Expect PrimaryExpression.
-            type = PrimaryExpression(new Set(primaryExpressionStopSymbols,
-                                                  stopSymbols));
+            type = PrimaryExpression(new Set(primaryExpressionStopSymbols, stopSymbols));
 
             // Make sure the PrimaryExpression evaluates to type Boolean.
             if (type != Type.Boolean)
             {
-                _annotator.TypeError(
-                          type,
-                          DiadicTypeErrorCategory.NonBooleanRightOfLogicalOperator,
-                          CurrentSymbol);
+                _annotator.TypeError(type,
+                                     DiadicTypeErrorCategory.NonBooleanRightOfLogicalOperator,
+                                     CurrentSymbol);
             }
 
             // Assemble code.
@@ -2641,8 +2492,8 @@ public class Parser
 
         // Expect SimpleExpression.
         Type type = SimpleExpression(new Set(simpleExpressionStopSymbols,
-                                                  relationalOperatorStopSymbols,
-                                                  stopSymbols));
+                                             relationalOperatorStopSymbols,
+                                             stopSymbols));
 
         // Relational operator follows?
         if (relationalOperatorSymbols.Contains(CurrentSymbol))
@@ -2651,12 +2502,10 @@ public class Parser
             Symbol lastRelationalOperator = CurrentSymbol;
 
             // Equality operation?
-            if ((CurrentSymbol == Symbol.Equal) ||
-                (CurrentSymbol == Symbol.NotEqual))
+            if ((CurrentSymbol == Symbol.Equal) || (CurrentSymbol == Symbol.NotEqual))
             {
                 // Expect RelationalOperator.
-                RelationalOperator(new Set(relationalOperatorStopSymbols,
-                                                stopSymbols));
+                RelationalOperator(new Set(relationalOperatorStopSymbols, stopSymbols));
 
                 // Expect SimpleExpression.
                 Type typeOfRightHandElement = SimpleExpression(stopSymbols);
@@ -2665,26 +2514,21 @@ public class Parser
                 if ((type != typeOfRightHandElement) &&
                     (typeOfRightHandElement != Type.Universal))
                 {
-                    _annotator.TypeError(
-                            type,
-                            DiadicTypeErrorCategory.TypeMismatchAcrossEqualityOperator,
-                            lastRelationalOperator);
+                    _annotator.TypeError(type, DiadicTypeErrorCategory.TypeMismatchAcrossEqualityOperator, lastRelationalOperator);
                 }
 
                 // Types across equality operator should not be void.
                 if (type == Type.Void)
                 {
-                    _annotator.TypeError(
-                            type,
-                            DiadicTypeErrorCategory.InvalidTypeAcrossEqualityOperator,
-                            lastRelationalOperator);
+                    _annotator.TypeError(type,
+                                         DiadicTypeErrorCategory.InvalidTypeAcrossEqualityOperator,
+                                         lastRelationalOperator);
                 }
             }
             else  // Comparison operation
             {
                 // Expect RelationalOperator.
-                RelationalOperator(new Set(relationalOperatorStopSymbols,
-                                                stopSymbols));
+                RelationalOperator(new Set(relationalOperatorStopSymbols, stopSymbols));
 
                 // Expect SimpleExpression.
                 Type typeOfRightHandElement = SimpleExpression(stopSymbols);
@@ -2692,17 +2536,15 @@ public class Parser
                 // Types on either side of a comparison operator should be integers.
                 if (type != Type.Integer)
                 {
-                    _annotator.TypeError(
-                          type,
-                          DiadicTypeErrorCategory.NonIntegerLeftOfRelationalOperator,
-                          lastRelationalOperator);
+                    _annotator.TypeError(type,
+                                         DiadicTypeErrorCategory.NonIntegerLeftOfRelationalOperator,
+                                         lastRelationalOperator);
                 }
                 else if (typeOfRightHandElement != Type.Integer)
                 {
-                    _annotator.TypeError(
-                        typeOfRightHandElement,
-                        DiadicTypeErrorCategory.NonIntegerRightOfRelationalOperator,
-                        lastRelationalOperator);
+                    _annotator.TypeError(typeOfRightHandElement,
+                                         DiadicTypeErrorCategory.NonIntegerRightOfRelationalOperator,
+                                         lastRelationalOperator);
                 }
             }
 
@@ -2743,9 +2585,7 @@ public class Parser
         bool minusPrecedes = false;
         if (IsCurrentSymbol(Symbol.Minus))
         {
-            Expect(Symbol.Minus, new Set(minusStopSymbols,
-                                              termStopSymbols,
-                                              stopSymbols));
+            Expect(Symbol.Minus, new Set(minusStopSymbols, termStopSymbols, stopSymbols));
             minusPrecedes = true;
         }
 
@@ -2757,10 +2597,9 @@ public class Parser
             // "-" should be followed by an integer Term.
             if (type != Type.Integer)
             {
-                _annotator.TypeError(
-                          Type.Integer,
-                          DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
-                          Symbol.Minus);
+                _annotator.TypeError(Type.Integer,
+                                     DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
+                                     Symbol.Minus);
             }
 
             // Assemble code.
@@ -2783,16 +2622,13 @@ public class Parser
             // Left hand side of adding operator has to be of type Integer.
             if (type != Type.Integer)
             {
-                _annotator.TypeError(
-                          type,
-                          DiadicTypeErrorCategory.NonIntegerLeftOfAdditionOperator,
-                          lastAddingOperator);
+                _annotator.TypeError(type,
+                                     DiadicTypeErrorCategory.NonIntegerLeftOfAdditionOperator,
+                                     lastAddingOperator);
             }
 
             // Expect AddingOperator.
-            AddingOperator(new Set(addingOperatorStopSymbols,
-                                        termStopSymbols,
-                                        stopSymbols));
+            AddingOperator(new Set(addingOperatorStopSymbols, termStopSymbols, stopSymbols));
 
             // Expect Term.
             type = Term(new Set(termStopSymbols, stopSymbols));
@@ -2806,10 +2642,9 @@ public class Parser
             // Right hand side of adding operator has to be of type Integer.
             if (type != Type.Integer)
             {
-                _annotator.TypeError(
-                        type,
-                        DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
-                        lastAddingOperator);
+                _annotator.TypeError(type,
+                                     DiadicTypeErrorCategory.NonIntegerRightOfAdditionOperator,
+                                     lastAddingOperator);
                 type = Type.Integer;
             }
         }
@@ -2858,16 +2693,13 @@ public class Parser
             // Left hand side of multiplying operator has to be of type Integer.
             if (type != Type.Integer)
             {
-                _annotator.TypeError(
-                    type,
-                    DiadicTypeErrorCategory.NonIntegerLeftOfMultiplicationOperator,
-                    lastMultiplyingOperator);
+                _annotator.TypeError(type,
+                                     DiadicTypeErrorCategory.NonIntegerLeftOfMultiplicationOperator,
+                                     lastMultiplyingOperator);
             }
 
             // Expect MultiplyingOperator.
-            MultiplyingOperator(new Set(multiplyingOperatorStopSymbols,
-                                             factorStopSymbols,
-                                             stopSymbols));
+            MultiplyingOperator(new Set(multiplyingOperatorStopSymbols, factorStopSymbols, stopSymbols));
 
             // Expect Factor.
             type = Factor(new Set(factorStopSymbols, stopSymbols));
@@ -2882,8 +2714,8 @@ public class Parser
             if (type != Type.Integer)
             {
                 _annotator.TypeError(type,
-                  DiadicTypeErrorCategory.NonIntegerRightOfMultiplicationOperator,
-                  lastMultiplyingOperator);
+                                     DiadicTypeErrorCategory.NonIntegerRightOfMultiplicationOperator,
+                                     lastMultiplyingOperator);
                 type = Type.Integer;
             }
         }
@@ -2970,14 +2802,12 @@ public class Parser
                     Set expressionStopSymbols = new Set(Symbol.RightParanthesis);
 
                     // Expect "(".
-                    Expect(Symbol.LeftParanthesis,
-                                              new Set(leftParanthesisStopSymbols,
-                                                      expressionStopSymbols,
-                                                      stopSymbols));
+                    Expect(Symbol.LeftParanthesis, new Set(leftParanthesisStopSymbols,
+                                                           expressionStopSymbols,
+                                                           stopSymbols));
 
                     // Expect Expression.
-                    type = Expression(new Set(expressionStopSymbols,
-                                                   stopSymbols));
+                    type = Expression(new Set(expressionStopSymbols, stopSymbols));
 
                     // Expect ")".
                     Expect(Symbol.RightParanthesis, stopSymbols);
@@ -2995,8 +2825,7 @@ public class Parser
                                                  Symbol.LeftParanthesis);
 
                     // Expect "!"
-                    Expect(Symbol.Not, new Set(notStopSymbols,
-                                                    stopSymbols));
+                    Expect(Symbol.Not, new Set(notStopSymbols, stopSymbols));
 
                     // Expect Factor.
                     type = Factor(stopSymbols);
@@ -3004,9 +2833,7 @@ public class Parser
                     // Make sure the expression is of type Boolean.
                     if (type != Type.Boolean)
                     {
-                        _annotator.TypeError(
-                                    type,
-                                    TypeErrorCategory.NonBooleanToTheRightOfNotOperator);
+                        _annotator.TypeError(type, TypeErrorCategory.NonBooleanToTheRightOfNotOperator);
                     }
 
                     // Assemble code.

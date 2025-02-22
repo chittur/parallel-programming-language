@@ -48,9 +48,7 @@ public class Assembler
     /// <param name="filename">Name of the file.</param>
     public void GenerateExecutable(string filename)
     {
-        using FileStream stream = new FileStream(filename,
-                                                  FileMode.Create,
-                                                  FileAccess.Write);
+        using FileStream stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
         using (StreamWriter writer = new StreamWriter(stream))
         {
             foreach (int code in _assemblyTable)

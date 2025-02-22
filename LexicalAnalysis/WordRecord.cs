@@ -44,7 +44,7 @@ internal class WordRecord
     // Static constructor. Initializes the static variable.
     static WordRecord()
     {
-        WordRecord.VariableCount = 0;
+        VariableCount = 0;
     }
 
     /// <summary>
@@ -58,9 +58,9 @@ internal class WordRecord
         IsVariable = true;
         Spelling = spelling;
         Symbol = Symbol.Name;
-        Argument = WordRecord.VariableCount;
+        Argument = VariableCount;
 
-        ++WordRecord.VariableCount;
+        ++VariableCount;
     }
 
     /// <summary>

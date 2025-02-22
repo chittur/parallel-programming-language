@@ -569,9 +569,9 @@ public class Scanner
     private static bool IsDelimiter(char c)
     {
         return (c == '$') ||
-                (c == ' ') ||
-                (c == '\t') ||
-                (c == '\n') ||
+               (c == ' ') ||
+               (c == '\t') ||
+               (c == '\n') ||
                 (c == '\r');
     }
 }
