@@ -117,6 +117,9 @@ public class EndToEndTests
         Validate(Code, string.Empty, $"{Translator.ReceiveThroughUnopenedChannelMessage}{Environment.NewLine}");
     }
 
+    /// <summary>
+    /// Tests invalid opcode.
+    /// </summary>
     [TestMethod]
     public void TestInvalidOpcode()
     {
@@ -140,8 +143,38 @@ public class EndToEndTests
 
         // Assert
 
-        // Validate that the output of the program is as expected.
+        // Validate that the output of the program gives an error.
         Assert.AreEqual(result, $"{Translator.IncorrectOpcodeMessage}{Environment.NewLine}");
+    }
+
+    /// <summary>
+    /// Tests invalid intermediate code.
+    /// </summary>
+    [TestMethod]
+    public void TestInvalidIntermediateCode()
+    {
+        // Arrange
+
+        // Write invalid opcode to the intermediate code file.
+        string intermediateFilename = "InvalidOpcode.sachin";
+        const string InvalidIntermediateCode = "ABCD";
+        File.WriteAllText(intermediateFilename, $"{InvalidIntermediateCode}{Environment.NewLine}");
+
+        //Act
+
+        // Feed the intermediate code file into the Runtime.
+        using TextReader reader = new StringReader(string.Empty);
+        StringBuilder stringBuilder = new StringBuilder();
+        using TextWriter writer = new StringWriter(stringBuilder);
+        Interpreter interpreter = new Interpreter(reader, writer);
+        interpreter.RunProgram(intermediateFilename);
+        string result = stringBuilder.ToString();
+        File.Delete(intermediateFilename); // Delete the intermediate code file.
+
+        // Assert
+
+        // Validate that the output of the program gives an error.
+        Assert.IsFalse(string.IsNullOrEmpty(result));
     }
 
     /// <summary>

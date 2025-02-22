@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Parallelism;
 
@@ -75,7 +76,6 @@ public class Interpreter
         }
         catch (Exception exception)
         {
-            Console.WriteLine(exception.StackTrace);
             HandleException(exception.Message);
         }
     }
@@ -102,11 +102,7 @@ public class Interpreter
     private void LoadProgram(string filename)
     {
         string[] lines = File.ReadAllLines(filename);
-        if (lines.Length >= Max)
-        {
-            throw new Exception("Program too big.");
-        }
-
+        Debug.Assert(lines.Length < Max, "Program too big.");
         foreach (string line in lines)
         {
             Store.Add(Convert.ToInt32(line));

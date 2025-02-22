@@ -35,7 +35,6 @@ internal class Translator : Node
     private readonly Interpreter _interpreter;  // The interpreter instance.
 
     // Exception messages.
-    internal const string StackOverflowMessage = "Stack overflow.";
     internal const string IncorrectOpcodeMessage = "Incorrect opcode.";
     internal const string ArrayIndexOutOfBoundsMessage = "Array index is out of bounds.";
     internal const string BooleanInputIncorrectFormatMessage = "Boolean input was not in the correct format.";
