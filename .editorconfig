@@ -241,7 +241,7 @@ csharp_style_prefer_top_level_statements = false:error
 csharp_style_prefer_primary_constructors = true:none
 
 [*.cs]
-csharp_new_line_before_open_brace = types, methods, local_functions, properties, control_blocks, anonymous_methods, lambdas, object_initializers, object_collection_array_initializers, anonymous_types:error
+csharp_new_line_before_open_brace = types, methods, local_functions, accessors, properties, control_blocks, anonymous_methods, lambdas, object_initializers, object_collection_array_initializers, anonymous_types:error
 csharp_new_line_before_else = true:error
 csharp_new_line_before_catch = true:error
 csharp_new_line_before_finally = true:error
