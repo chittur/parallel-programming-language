@@ -514,7 +514,6 @@ public class Parser
     private bool Definition(Set stopSymbols)
     {
         bool expectSemicolon = true;
-
         switch (CurrentSymbol)
         {
             case Symbol.Constant:

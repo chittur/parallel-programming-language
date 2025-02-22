@@ -326,14 +326,44 @@ public class ParserTests
     public void TestInvalidSymbolsAfterValidProgram()
     {
         const string Code = @"
-            $ - Sample program that tests 'array out of bounds' runtime error.
+            $ - Sample program that tests invalid symbols after a valid program.
             {
               write 5;
             } InvalidSymbol
             ";
 
+        // Expected compilation errors for the code above.
         int[] expectedErrors =
             [
+                (int)GenericErrorCategory.GenericSyntaxError,
+            ];
+
+        // Validate.
+        ValidateErrors(Code, expectedErrors);
+    }
+
+    /// <summary>
+    /// Tests invalid name after a constant.
+    /// </summary>
+    [TestMethod]
+    public void TestInvalidNameAfterConstant()
+    {
+        const string Code = @"
+            $ - Sample program that tests invalid name after a constant.
+            {
+              constant integer = %;
+            }
+            ";
+
+        int[] expectedErrors =
+            [
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
+                (int)GenericErrorCategory.GenericSyntaxError,
                 (int)GenericErrorCategory.GenericSyntaxError,
             ];
 
