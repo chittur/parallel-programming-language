@@ -21,12 +21,6 @@ namespace ErrorReporting;
 /// </summary>
 static class ErrorMessages
 {
-    // // Internal error messages.
-    internal const string InvalidOperationSymbol = "An invalid symbol has been passed to generate operation code.";
-    internal const string AssemblyTableIsFull = "Assembly table is full; the compiler has run out of memory.";
-    internal const string InternalProcessingError = "Internal processing error.";
-    internal const string Internal = "Internal";
-
     // Generic syntax error messages.
     internal const string Syntax = "Syntax";
 
@@ -122,39 +116,6 @@ public class Annotator
     /// True indicates that no errors have been reported. False otherwise.
     /// </summary>
     public bool ErrorFree { get; private set; }
-
-    /// <summary>
-    /// Prints out internal error, error caused by the compiler itself.
-    /// </summary>
-    /// <param name="category">Category of internal error.</param>
-    public void InternalError(InternalErrorCategory category)
-    {
-        ErrorFree = false;
-        string message = string.Empty;
-
-        switch (category)
-        {
-            case InternalErrorCategory.InvalidOperationSymbol:
-                {
-                    message = ErrorMessages.InvalidOperationSymbol;
-                    break;
-                }
-
-            case InternalErrorCategory.AssemblyTableIsFull:
-                {
-                    message = ErrorMessages.AssemblyTableIsFull;
-                    break;
-                }
-
-            case InternalErrorCategory.InternalProcessingError:
-                {
-                    message = ErrorMessages.InternalProcessingError;
-                    break;
-                }
-        }
-
-        PrintError(ErrorMessages.Internal, (int)category, message);
-    }
 
     /// <summary>
     /// Prints out syntax error.
@@ -535,6 +496,6 @@ public class Annotator
     /// <param name="errorMessage">Error message.</param>
     private void PrintError(string errorCategory, int errorCode, string errorMessage)
     {
-        PrintErrorReport?.Invoke(errorCategory, errorCode, errorMessage);
+        PrintErrorReport.Invoke(errorCategory, errorCode, errorMessage);
     }
 }

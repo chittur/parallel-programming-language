@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using ErrorReporting;
 using Intermediary;
@@ -462,14 +463,9 @@ public class Assembler
     /// <param name="value">The code to be emitted.</param>
     private void EmitCode(int value)
     {
-        if (CurrentAddress >= Assembler.Max)
-        {
-            _annotator.InternalError(InternalErrorCategory.AssemblyTableIsFull);
-        }
-        else
-        {
-            _assemblyTable.Add(value);
-            ++CurrentAddress;
-        }
+        Debug.Assert((CurrentAddress < Assembler.Max), "Assembly table filling up.");
+
+        _assemblyTable.Add(value);
+        ++CurrentAddress;
     }
 }

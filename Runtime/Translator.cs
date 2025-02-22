@@ -13,6 +13,7 @@
  *****************************************************************************/
 
 using System;
+using System.Diagnostics;
 using Intermediary;
 using Parallelism;
 
@@ -103,10 +104,8 @@ internal class Translator : Node
         // Run the program.
         while (_running && _interpreter.NoGlobalErrors)
         {
-            if (_programRegister >= (Interpreter.Max - 2))
-            {
-                throw new Exception(StackOverflowMessage);
-            }
+            // Check for programming getting too big.
+            Debug.Assert((_programRegister < Interpreter.Max), "Stack overflow.");
 
             Opcode opcode = (Opcode)_interpreter.Store[_programRegister];
             switch (opcode)
@@ -369,10 +368,7 @@ internal class Translator : Node
     private void Allocate(int words)
     {
         _stackRegister += words;
-        if (_stackRegister >= Interpreter.Max)
-        {
-            throw new Exception(StackOverflowMessage);
-        }
+        Debug.Assert(_stackRegister < Interpreter.Max, "Stack overflow.");
     }
 
     /// <summary>

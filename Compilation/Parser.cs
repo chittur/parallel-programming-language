@@ -334,7 +334,7 @@ public class Parser
 
             default:
                 {
-                    _annotator.InternalError(InternalErrorCategory.InvalidOperationSymbol);
+                    Debug.Assert(false, "Invalid operation symbol.");
                     break;
                 }
         }
@@ -976,26 +976,22 @@ public class Parser
         }
 
         int max = parameterRecordList.Count;
-        if (parameterList.Count != max)
-        {
-            _annotator.InternalError(InternalErrorCategory.InternalProcessingError);
-        }
-        else
-        {
-            // The first parameter needs to have a relative displacement of -1, the 
-            // second parameter needs to have a relative displacement of -2 etc.
-            // Hence define the arguments in the reverse order.
-            for (int count = max - 1; count >= 0; --count)
-            {
-                Metadata metaData = new Metadata
-                {
-                    Type = parameterRecordList[count].ParameterType,
-                    Kind = parameterRecordList[count].ParameterKind
-                };
 
-                ObjectRecord newObjectRecord = new ObjectRecord();
-                _auditor.Define(parameterList[count], metaData, ref newObjectRecord);
-            }
+        Debug.Assert((parameterList.Count == max), "Parameter list count does not match the parameter record list count.");
+
+        // The first parameter needs to have a relative displacement of -1, the 
+        // second parameter needs to have a relative displacement of -2 etc.
+        // Hence define the arguments in the reverse order.
+        for (int count = max - 1; count >= 0; --count)
+        {
+            Metadata metaData = new Metadata
+            {
+                Type = parameterRecordList[count].ParameterType,
+                Kind = parameterRecordList[count].ParameterKind
+            };
+
+            ObjectRecord newObjectRecord = new ObjectRecord();
+            _auditor.Define(parameterList[count], metaData, ref newObjectRecord);
         }
     }
 

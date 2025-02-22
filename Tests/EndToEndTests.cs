@@ -15,6 +15,7 @@ using System.IO;
 using System.Text;
 using Compilation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Parallelism;
 using Runtime;
 
 namespace Tests;
@@ -33,7 +34,6 @@ public class EndToEndTests
     {
         const string Code = @"
             $ - Sample program that tests 'array out of bounds' runtime error.
-
             {
               integer[5] numbers;
               numbers[6] = 1;
@@ -52,7 +52,6 @@ public class EndToEndTests
     {
         const string Code = @"
             $ - Sample program that tests 'array out of bounds' runtime error.
-
             {
               integer[5] numbers;
               numbers[0] = 1;
@@ -71,7 +70,6 @@ public class EndToEndTests
     {
         const string Code = @"
             $ - Sample program that tests 'boolean input incorrect format' runtime error.
-
             {
               boolean var;
               read var;
@@ -90,7 +88,6 @@ public class EndToEndTests
     {
         const string Code = @"
             $ - Sample program that tests 'send through unopened channel' runtime error.
-
             {
               channel c;
               send 1 -> c;
@@ -109,7 +106,6 @@ public class EndToEndTests
     {
         const string Code = @"
             $ - Sample program that tests 'receive through unopened channel' runtime error.
-
             {
               channel c;
               integer i;
@@ -119,6 +115,33 @@ public class EndToEndTests
 
         // Validate that the program produces the expected runtime error.
         Validate(Code, string.Empty, $"{Translator.ReceiveThroughUnopenedChannelMessage}{Environment.NewLine}");
+    }
+
+    [TestMethod]
+    public void TestInvalidOpcode()
+    {
+        // Arrange
+
+        // Write invalid opcode to the intermediate code file.
+        string intermediateFilename = "InvalidOpcode.sachin";
+        const string InvalidOpcode = "100";
+        File.WriteAllText(intermediateFilename, $"{InvalidOpcode}{Environment.NewLine}");
+
+        //Act
+
+        // Feed the intermediate code file into the Runtime.
+        using TextReader reader = new StringReader(string.Empty);
+        StringBuilder stringBuilder = new StringBuilder();
+        using TextWriter writer = new StringWriter(stringBuilder);
+        Interpreter interpreter = new Interpreter(reader, writer);
+        interpreter.RunProgram(intermediateFilename);
+        string result = stringBuilder.ToString();
+        File.Delete(intermediateFilename); // Delete the intermediate code file.
+
+        // Assert
+
+        // Validate that the output of the program is as expected.
+        Assert.AreEqual(result, $"{Translator.IncorrectOpcodeMessage}{Environment.NewLine}");
     }
 
     /// <summary>
@@ -133,7 +156,6 @@ public class EndToEndTests
             $ - Then feed the number to a parallel recursive function to find the sum
             $   of the squares of its digits.
             $ - Demonstrates the usage of arrays, parallel assignment, parallel recursion.
-
             {
               @ Sort(boolean descending, reference integer a, reference integer b)
               {
@@ -230,6 +252,7 @@ public class EndToEndTests
     {
         // Sample program that exercises a few language constructs like procedures and operators.
         const string Code = @"
+            $ Sample program that exercises a few language constructs like procedures and operators.
             {
               $ - Program to exercise a few language constructs like procedures and operators.
 

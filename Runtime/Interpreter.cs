@@ -24,8 +24,8 @@ namespace Runtime;
 /// </summary>
 public class Interpreter
 {
-    internal const int Max = 10002;                     // Available memory for the each node.
-    internal int[] Store { get; set; }                  // Memory.
+    internal const int Max = 10000;                     // Limit check for a reasonably big program.
+    internal List<int> Store { get; set; }              // Memory.
     internal int EndOfProgram { get; set; }             // End address for the program code.
     internal List<Channel<int>> Channels { get; set; }  // List of channels.
     internal bool NoGlobalErrors { get; set; }          // No errors in any of the parallel nodes?
@@ -41,7 +41,7 @@ public class Interpreter
 
     public Interpreter(TextReader input, TextWriter output)
     {
-        Store = new int[Max];
+        Store = [];
         NoGlobalErrors = true;
         Channels = [];
         Input = input;
@@ -75,6 +75,7 @@ public class Interpreter
         }
         catch (Exception exception)
         {
+            Console.WriteLine(exception.StackTrace);
             HandleException(exception.Message);
         }
     }
@@ -106,13 +107,11 @@ public class Interpreter
             throw new Exception("Program too big.");
         }
 
-        int count = 0;
         foreach (string line in lines)
         {
-            Store[count] = Convert.ToInt32(line);
-            ++count;
+            Store.Add(Convert.ToInt32(line));
         }
 
-        EndOfProgram = count - 1;
+        EndOfProgram = Store.Count - 1;
     }
 }

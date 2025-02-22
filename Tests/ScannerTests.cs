@@ -10,6 +10,7 @@
  * Description = Unit tests for the Scanner class.
  *****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using LanguageConstructs;
@@ -165,5 +166,41 @@ public class ScannerTests
         next = scanner.NextSymbol();
         Assert.IsFalse(next);
         Assert.AreEqual(scanner.CurrentSymbol, Symbol.EndOfText);
+    }
+
+    /// <summary>
+    /// Tests scanner when an empty reader is passed.
+    /// </summary>
+    [TestMethod]
+    public void TestEmptyProgram()
+    {
+        // Feed an empty reader to the scanner.
+        Scanner scanner = new Scanner(reader: null);
+
+        bool next = scanner.NextSymbol();
+        Assert.IsFalse(next);
+    }
+
+    /// <summary>
+    /// Tests 'line is incorrect' functionality of the scanner.
+    /// </summary>
+    [TestMethod]
+    public void TestLineIsIncorrect()
+    {
+        // Arrange
+
+        // Set the line to be incorrect.
+        Scanner scanner = new Scanner(new StringReader($"{Environment.NewLine}{{}}"));
+        scanner.SetLineIsIncorrect();
+        Assert.IsFalse(scanner.IsLineCorrect);
+
+        // Act
+
+        // The next symbol is a new line, so IsLineCorrect will be set to true after that.
+        bool next = scanner.NextSymbol();
+
+        // Assert
+        Assert.IsTrue(next);
+        Assert.IsTrue(scanner.IsLineCorrect);
     }
 }

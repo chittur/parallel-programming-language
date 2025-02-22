@@ -320,6 +320,88 @@ public class ParserTests
     }
 
     /// <summary>
+    /// Tests error if invalid symbols are present after a valid program.
+    /// </summary>
+    [TestMethod]
+    public void TestInvalidSymbolsAfterValidProgram()
+    {
+        const string Code = @"
+            $ - Sample program that tests 'array out of bounds' runtime error.
+            {
+              write 5;
+            } InvalidSymbol
+            ";
+
+        int[] expectedErrors =
+            [
+                (int)GenericErrorCategory.GenericSyntaxError,
+            ];
+
+        // Validate.
+        ValidateErrors(Code, expectedErrors);
+    }
+
+    /// <summary>
+    /// Tests that errors are printed to the console.
+    /// </summary>
+    [TestMethod]
+    public void TestPrintingErrorToConsole()
+    {
+        const string Code = @"
+            $ - Sample program to test that errors are printed to the console.
+            {
+              abcdefg;
+            }
+            ";
+
+        // Arrange
+
+        StringWriter stringWriter = new StringWriter();
+        Console.SetOut(stringWriter);
+
+        // Act
+
+        // Feed the code to the parser.
+        string intermediateFilename = new Random().Next().ToString() + ".sachin";
+        Parser parser = new Parser();
+        TextReader reader = new StringReader(Code);
+        bool compiled = parser.Compile(reader, intermediateFilename);
+
+        // Assert
+
+        // Validate that the output contains a compilation error code.
+        Assert.IsFalse(compiled);
+        string output = stringWriter.ToString();
+        Assert.IsTrue(output.Contains("Error code = "));
+    }
+
+    /// <summary>
+    /// Tests that an empty program results in a compilation error.
+    /// </summary>
+    [TestMethod]
+    public void TestEmptyProgram()
+    {
+        // Arrange
+
+        StringWriter stringWriter = new StringWriter();
+        Console.SetOut(stringWriter);
+
+        // Act
+
+        // Feed the code to the parser.
+        string intermediateFilename = new Random().Next().ToString() + ".sachin";
+        Parser parser = new Parser();
+        bool compiled = parser.Compile(null, intermediateFilename);
+
+        // Assert
+
+        // Validate that the output contains a compilation error code.
+        Assert.IsFalse(compiled);
+        string output = stringWriter.ToString();
+        Assert.IsTrue(output.Contains("Error code = "));
+    }
+
+    /// <summary>
     /// Tests successful compilation.
     /// </summary>
     [TestMethod]

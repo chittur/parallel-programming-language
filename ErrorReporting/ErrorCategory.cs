@@ -14,27 +14,6 @@
 namespace ErrorReporting;
 
 /// <summary>
-/// Enumerates errors caused by the compiler itself.
-/// </summary>
-public enum InternalErrorCategory
-{
-    /// <summary>
-    /// An invalid symbol has been passed to generate operation code.
-    /// </summary>
-    InvalidOperationSymbol = 1,
-
-    /// <summary>
-    /// Assembly table is full; the compiler has run out of memory.
-    /// </summary>
-    AssemblyTableIsFull = 2,
-
-    /// <summary>
-    /// Internal processing error.
-    /// </summary>
-    InternalProcessingError = 3
-}
-
-/// <summary>
 /// Enumerates generic syntax errors.
 /// </summary>
 public enum GenericErrorCategory
