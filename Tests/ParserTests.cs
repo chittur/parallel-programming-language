@@ -41,7 +41,8 @@ public class ParserTests
                 constant c = i;         $ Error: NonConstantInConstantDefinition = 301
                 integer[0] array;       $ Error: NonPositiveIntegerIndexInArrayDeclaration = 304
                 j = i;                  $ Error: UndefinedName = 201
-                c = 10;                 $ Error: AssignmentModifiesConstant = 302   
+                i = undefined;          $ Error: UndefinedName = 201
+                c = 10;                 $ Error: AssignmentModifiesConstant = 302
                 i, c = 5, 10;           $ Error: AssignmentModifiesConstant = 302
                 i = array;              $ Error: ArrayVariableMissingIndexedSelector = 303
             }
@@ -54,6 +55,7 @@ public class ParserTests
                 (int)ScopeErrorCategory.AmbiguousName,
                 (int)KindErrorCategory.NonConstantInConstantDefinition,
                 (int)KindErrorCategory.NonPositiveIntegerIndexInArrayDeclaration,
+                (int)ScopeErrorCategory.UndefinedName,
                 (int)ScopeErrorCategory.UndefinedName,
                 (int)KindErrorCategory.AssignmentModifiesConstant,
                 (int)KindErrorCategory.AssignmentModifiesConstant,

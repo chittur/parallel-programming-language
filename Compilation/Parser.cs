@@ -218,8 +218,7 @@ public class Parser
         if (_scanner.IsLineCorrect)
         {
             bool proceed = true;
-            while ((!stopSymbols.Contains(_scanner.CurrentSymbol)) &&
-                   proceed)
+            while ((!stopSymbols.Contains(_scanner.CurrentSymbol)) && proceed)
             {
                 proceed = _scanner.NextSymbol();
             }
@@ -1368,7 +1367,7 @@ public class Parser
 
             default:
                 {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
+                    Debug.Assert(false, $"BooleanSymbol: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -1464,7 +1463,7 @@ public class Parser
 
             default:
                 {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
+                    Debug.Assert(false, $"Statement: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -2026,7 +2025,7 @@ public class Parser
 
             default:
                 {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
+                    Debug.Assert(false, $"AddingOperator: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -2078,7 +2077,7 @@ public class Parser
 
             default:
                 {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
+                    Debug.Assert(false, $"RelationalOperator: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -2106,7 +2105,7 @@ public class Parser
 
             default:
                 {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
+                    Debug.Assert(false, $"PrimaryOperator: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
@@ -2146,7 +2145,7 @@ public class Parser
 
             default:
                 {
-                    ReportSyntaxErrorAndRecover(stopSymbols);
+                    Debug.Assert(false, $"MultiplyingOperator: Invalid symbol {CurrentSymbol}.");
                     break;
                 }
         }
