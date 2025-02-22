@@ -245,7 +245,7 @@ public class Parser
     /// </param>
     private void Operation(Symbol symbol)
     {
-       switch (symbol)
+        switch (symbol)
         {
             case Symbol.Plus:
                 {
