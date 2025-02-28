@@ -1135,8 +1135,7 @@ public class Parser
         Set commaStopSymbols = new Set(Symbol.Name);
 
         // Expect ObjectAccess.
-        Metadata metadata =
-          ObjectAccess(new Set(objectAccessStopSymbols, stopSymbols));
+        Metadata metadata = ObjectAccess(new Set(objectAccessStopSymbols, stopSymbols));
 
         if (operation == OperationCategory.Read)
         {

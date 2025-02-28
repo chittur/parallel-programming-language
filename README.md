@@ -257,5 +257,5 @@ SimpleExpression = [ "-" ] Term { AddingOperator Term }
 
 Term = Factor { MultiplyingOperator Factor } 
 
-Factor = Constant | ObjectAccess | "(" Expression ")" | "!" Factor 
+Factor = Constant | ObjectAccess | ProcedureInvocation | "(" Expression ")" | "!" Factor 
 ```
